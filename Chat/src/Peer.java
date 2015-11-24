@@ -24,22 +24,13 @@ class clientHandler extends Thread {
             DataInputStream dis = new DataInputStream(client.getInputStream());
             //Perform IO Operations
             while (true) {
-                dos.writeUTF("Please Enter your Account Number");
-                String AN = dis.readUTF();
                 //Checks must be performed
-                dos.writeUTF(AN + " is Valid \nPlease Enter your Password");
-                String pass = dis.readUTF();
-                //Checks must be performed
-                dos.writeUTF("Correct Password \nPlease Enter your Payment Amount");
-                String amount = dis.readUTF();
-                //Checks must be performed
-                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
+                dos.writeUTF("Hello peer");
                 String Choice = dis.readUTF();
-                if (Choice.equalsIgnoreCase("N")) {
+                if (Choice.equalsIgnoreCase("No")) {
                     dos.writeUTF("Bye");
                     break;
                 }
-
             }
             //Close/release resources
             dis.close();
