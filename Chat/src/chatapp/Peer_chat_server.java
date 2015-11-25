@@ -31,8 +31,8 @@ class clientHandler extends Thread {
             //Add ip and user name to vector    
                 dos.writeUTF("Welcome :" +username);
                 user.getInetAddress();
-                online_user online_user1 = new online_user(username, user.getInetAddress())
-                chat_server.OnlineUserList.add();
+                online_user online_user1 = new online_user(username, user.getInetAddress());
+                chat_server.OnlineUserList.add(online_user1);
              
              
                 
