@@ -7,12 +7,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-class clientHandler extends Thread {
+class Peer extends Thread {
 
     private Socket client;
 
     // constructor
-    public clientHandler(Socket client) {
+    public Peer(Socket client) {
         this.client = client;
     }
     
@@ -43,9 +43,8 @@ class clientHandler extends Thread {
     }
 }
 
-public class Peer {
-
-    /**
+class Cmain {
+	 /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -58,8 +57,10 @@ public class Peer {
             //2.Listen for Clients
             Socket c;
             c = sv.accept();
-            clientHandler ch = new clientHandler(c);
+            Peer ch = new Peer(c);
             ch.start();
+            
+            
                 
             //1.Create Client Socket and connect to the server
             Socket client = new Socket("127.0.0.1", 1234);
@@ -101,5 +102,4 @@ public class Peer {
         }
 
     }
-
 }

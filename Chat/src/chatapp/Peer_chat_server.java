@@ -1,6 +1,8 @@
 package chatapp;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,8 +23,8 @@ class clientHandler extends Thread {
     public void run() {
         try {
             //Create IO Streams
-            DataOutputStream dos = new DataOutputStream(user.getOutputStream());
-            DataInputStream dis = new DataInputStream(user.getInputStream());
+        	 ObjectOutputStream dos = new  ObjectOutputStream(user.getOutputStream());
+            ObjectInputStream dis = new ObjectInputStream(user.getInputStream());
             //Perform IO Operations
             while (true) {
                 dos.writeUTF("Please Enter your user name");
@@ -33,10 +35,7 @@ class clientHandler extends Thread {
                 user.getInetAddress();
                 online_user online_user1 = new online_user(username, user.getInetAddress());
                 chat_server.OnlineUserList.add(online_user1);
-             
-             
-                
-              
+           
                 //Checks must be performed
                
               
@@ -51,8 +50,8 @@ class clientHandler extends Thread {
 				;
 				break;		
               }
-              case 	
-
+              case List_Groups:
+             break;
 			default:
 				break;
 			}
@@ -146,5 +145,25 @@ class available_groups
 		return false;
 	}
 	
+	
+
+	
 }
+
+class main {
+	
+	public static void main(String args[])
+	{ 
+		  
+		
+	}
+
+	
+	
+}
+
+
+
+
+
 
