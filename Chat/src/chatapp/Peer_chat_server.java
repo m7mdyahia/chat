@@ -39,11 +39,11 @@ class clientHandler extends Thread {
                 //Checks must be performed
                
               
-                String request = dis.readUTF();
+                Message request = (Message)dis.readObject();
                 //check
                 
-              switch (request.MsgType) {
-              case create_group:
+              switch (request.msg) {
+              case Create_Group:
               {
             	  
             	  chat_server.available_groups_list.add(new available_groups(request.data,online_user1))
