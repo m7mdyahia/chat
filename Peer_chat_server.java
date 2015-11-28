@@ -62,7 +62,7 @@ class clientHandler extends Thread {
             	   chat_server.join(request.data,user_identification);
             	  break;
               case Conv_Msg:
-            	  chat_server.broadcast(request.data,user_identification,)
+//            	  chat_server.broadcast(request.data,user_identification,)
 			default:
 				break;
 			}
