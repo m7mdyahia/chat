@@ -26,13 +26,19 @@ class clientHandler extends Thread {
     public void run() {
         try {
             //Create IO Streams
-        	ObjectOutputStream dos = new  ObjectOutputStream(user.getOutputStream());
+            ObjectOutputStream dos = new  ObjectOutputStream(user.getOutputStream());
             ObjectInputStream dis = new ObjectInputStream(user.getInputStream());
             
             while (true) {
                 dos.writeObject(new Message(Message.MsgType.Enter_Name));
                 
-                User user_identification = (User) dis.readObject();
+                User user_identification = null;
+                User_Message um = (User_Message)dis.readObject();
+                user_identification.username = um.user.username;
+                user_identification.port = um.user.port;
+                user_identification.ip = ;
+                user_identification.is_online = true;
+                
                 //Checks must be performed
             //Add ip and user name to vector    
                 //dos.writeUTF("Welcome :" +user_identification);
