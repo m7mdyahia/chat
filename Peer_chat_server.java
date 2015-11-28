@@ -39,7 +39,7 @@ class clientHandler extends Thread {
                 user_identification.is_online = true;	
                 user_identification.ip = user.getInetAddress();
                 
-                
+                 System.out.println(user_identification.username);
                 chat_server.user_List.add(user_identification);        
                                          
                Message request = (Message)dis.readObject();

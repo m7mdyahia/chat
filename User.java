@@ -1,8 +1,9 @@
 package chatapp;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
-public class User
+public class User implements Serializable
 {
 	String username;
 	InetAddress ip;
