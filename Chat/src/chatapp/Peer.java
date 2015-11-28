@@ -1,18 +1,21 @@
 
 package chatapp;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-class Peer extends Thread {
+class PeerHandler extends Thread {
 
     private Socket client;
 
     // constructor
-    public Peer(Socket client) {
+    public PeerHandler(Socket client) {
         this.client = client;
     }
     
@@ -43,7 +46,7 @@ class Peer extends Thread {
     }
 }
 
-class Cmain {
+class Peer {
 	 /**
      * @param args the command line arguments
      */
@@ -53,33 +56,39 @@ class Cmain {
         
         // TODO code application logic here
         try {   
-            ServerSocket sv = new ServerSocket(1234);
+            ServerSocket sv = new ServerSocket(0);
+            int port = sv.getLocalPort();
+            
             //2.Listen for Clients
             Socket c;
             c = sv.accept();
-            Peer ch = new Peer(c);
-            ch.start();
+            PeerHandler ph = new PeerHandler(c);
+            ph.start();
             
             
                 
             //1.Create Client Socket and connect to the server
             Socket client = new Socket("127.0.0.1", 1234);
             //2.if accepted create IO streams
-            DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-            DataInputStream dis = new DataInputStream(client.getInputStream());
+            ObjectOutputStream dos = new ObjectOutputStream(client.getOutputStream());
+            ObjectInputStream dis = new ObjectInputStream(client.getInputStream());
             
             Scanner sc = new Scanner(System.in);
             String userInput;
             //3.Perform IO operations
             while (true) {
-                String response;
+                Message m= new Message();
                 //read the response from the server
-                response = dis.readUTF();
+                m = (Message)dis.readObject();
                 //Print response
-                System.out.println(response);
-                if (response.equalsIgnoreCase("Bye")) {
-                    break;
+                System.out.println(m.data);
+                
+                if (m.msg == Message.MsgType.Enter_Name) {
+                    userInput = sc.nextLine();
+                    m.dataTosend(Message.MsgType.User_Name, userInput);
+                    dos.writeObject(m);
                 }
+                
                 //read from the user
                 userInput = sc.nextLine();
                 dos.writeUTF(userInput);
