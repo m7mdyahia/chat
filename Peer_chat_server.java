@@ -46,9 +46,17 @@ class clientHandler extends Thread {
         
                 
               switch (request.msg) {
-              case Create_Group:
+              case Bye:
               {
-           	  
+            	  user_identification.is_online=false;
+              }
+              case List_Users:
+              {
+            	  dos.writeObject(new ListofUseres(chat_server.user_List));
+                  break;
+              }
+              case Create_Group:
+              {        	  
             	  chat_server.available_groups_list.add(new available_groups(request.data,user_identification))
 				;
 				break;		
@@ -61,8 +69,9 @@ class clientHandler extends Thread {
               case Join_Group:
             	   chat_server.join(request.data,user_identification);
             	  break;
-              case Conv_Msg:
-            	  chat_server.broadcast(request.data,user_identification,)
+              case Conv_Msg_sent:
+            	  broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
+            	  chat_server.broadcast(sent_message.data,sent_message.group,user_identification);
 			default:
 				break;
 			}
@@ -118,6 +127,16 @@ public class Peer_chat_server {
 
     }
 
+	public void broadcast(String data, String group, User user_identification) {
+		for (available_groups available_groups : available_groups_list) {
+			if(group==available_groups.name)
+			{
+				available_groups.broadcast(data,user_identification);
+			}
+		}
+		
+	}
+
 	public void join(String data,User user) {
 		// TODO Auto-generated method stub
 		
@@ -158,8 +177,16 @@ class available_groups
 		this.group_useres.add(creator);
 	}
 
-	public boolean  broadcast(String msg)
+	public boolean  broadcast(String msg, User user_identification)
 	{
+		for (User user : group_useres) {
+			if(user.equals(user_identification))
+			{
+				;
+				
+			}
+			
+		}
 		return false;
 	}
 	

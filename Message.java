@@ -51,8 +51,8 @@ class User_Message extends Message
 class ListofUseres extends Message
 {
 	
-	public ListofUseres(String data,ArrayList<User> userlist) {
-		super( MsgType.List_Users, data);
+	public ListofUseres(ArrayList<User> userlist) {
+		super( MsgType.List_Users);
 		this.userlist = userlist;
 	}
 
@@ -72,4 +72,15 @@ class ListofGroups extends Message
 	}
 
 	ArrayList<available_groups> grouplist;
+}
+class broadcast_messsage_send  extends Message
+{
+	String group;
+
+	public broadcast_messsage_send(String resala_nafsha,String group_name) {
+		super(  MsgType.Conv_Msg, group_name);
+		this.group=group;
+		// TODO Auto-generated constructor stub
+	}
+	
 }
