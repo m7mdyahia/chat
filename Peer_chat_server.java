@@ -36,20 +36,11 @@ class clientHandler extends Thread {
                 User_Message um = (User_Message)dis.readObject();
                 User user_identification = new User(um.user); 
                 user_identification.is_online = true;	
-//                user_identification.username = um.user.username;
-//                user_identification.port = um.user.port;
-//                user_identification.ip = user.getInetAddress();
+                user_identification.ip = user.getInetAddress();
                 
                 
-                //Checks must be performed
-            //Add ip and user name to vector    
-                //dos.writeUTF("Welcome :" +user_identification);
-                
-                chat_server.OnlineUserList.add(user_identification);
-           
-                //Checks must be performed
-               
-              
+                chat_server.user_List.add(user_identification);        
+                                         
                 Message request = (Message)dis.readObject();
                 //check
                 
@@ -57,7 +48,7 @@ class clientHandler extends Thread {
               case Create_Group:
               {
             	  
-            	  chat_server.available_groups_list.add(new available_groups(request.data,User1))
+            	  chat_server.available_groups_list.add(new available_groups(request.data,user_identification))
 				;
 				break;		
               }
@@ -100,10 +91,10 @@ public class Peer_chat_server {
     public  void start() {
         // TODO code application logic here
         try {
-            //1.Create Server Socket
+            
             ServerSocket sv = new ServerSocket(1234);
             while (true) {
-                //2.Listen for Clients
+                
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
