@@ -65,6 +65,10 @@ class ListofGroups extends Message
 		super( MsgType.List_Groups, data);
 		this.grouplist = grouplist;
 	}
+	public ListofGroups(ArrayList<available_groups> grouplist) {
+		super( MsgType.List_Groups);
+		this.grouplist = grouplist;
+	}
 
 	ArrayList<available_groups> grouplist;
 }

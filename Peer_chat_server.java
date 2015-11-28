@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import chatapp.Message.MsgType;
 
@@ -41,19 +42,26 @@ class clientHandler extends Thread {
                 
                 chat_server.user_List.add(user_identification);        
                                          
-                Message request = (Message)dis.readObject();
-                //check
+               Message request = (Message)dis.readObject();
+        
                 
               switch (request.msg) {
               case Create_Group:
               {
-            	  
+           	  
             	  chat_server.available_groups_list.add(new available_groups(request.data,user_identification))
 				;
 				break;		
               }
               case List_Groups:
-             break;
+            	  {
+            		  dos.writeObject(new ListofGroups(chat_server.available_groups_list));
+                       break;
+             }
+              case Join_Group:
+            	   chat_server.join(request.data);
+            	  break;
+            	  
 			default:
 				break;
 			}
@@ -107,6 +115,18 @@ public class Peer_chat_server {
         }
 
     }
+
+	public void join(String data) {
+		// TODO Auto-generated method stub
+		
+		for (Iterator iterator = available_groups_list.iterator(); iterator
+				.hasNext();iterator.next()) {
+			
+			if(data==iterator.)
+			
+		}
+		
+	}
 
 }
 
