@@ -59,12 +59,14 @@ class clientHandler extends Thread {
                        break;
              }
               case Join_Group:
-            	   chat_server.join(request.data);
+            	   chat_server.join(request.data,user_identification);
             	  break;
-            	  
+              case Conv_Msg:
+            	  chat_server.broadcast(request.data,user_identification,)
 			default:
 				break;
 			}
+       
                 
                 
                 //Checks must be performed
@@ -116,14 +118,20 @@ public class Peer_chat_server {
 
     }
 
-	public void join(String data) {
+	public void join(String data,User user) {
 		// TODO Auto-generated method stub
 		
 		for (Iterator iterator = available_groups_list.iterator(); iterator
-				.hasNext();iterator.next()) {
+				.hasNext();) {
 			
-			if(data==iterator.)
+			available_groups ag = (available_groups) iterator
+					.next();
 			
+			if(ag.name==data)
+			{ 
+				ag.group_useres.add(user);
+				break;
+			}
 		}
 		
 	}
