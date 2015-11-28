@@ -1,9 +1,10 @@
 package chatapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Message {
+public class Message implements Serializable{
     
     public enum MsgType {
         Enter_Name,
@@ -35,7 +36,7 @@ public class Message {
     }
 }
 
-class User_Message extends Message
+class User_Message extends Message 
 {
 	
 	public User_Message(User user) {
