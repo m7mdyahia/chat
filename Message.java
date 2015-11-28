@@ -12,7 +12,8 @@ public class Message {
         List_Groups,
         Join_Group,
         Conv_Msg,
-        List_Users
+        List_Users,
+        Bye
     }
     public Message() {
 		super();

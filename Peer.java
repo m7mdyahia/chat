@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 class PeerHandler extends Thread {
+    
     private Socket client;
 
     // constructor
@@ -19,6 +20,8 @@ class PeerHandler extends Thread {
     @Override
     public void run() {
         try {
+           
+            
             System.out.println("New Client Arrived");
             //Create IO Streams
             DataOutputStream dos = new DataOutputStream(client.getOutputStream());
@@ -52,18 +55,14 @@ class Peer {
         System.out.print("hi");
         
         // TODO code application logic here
-        try {   
-            ServerSocket sv = new ServerSocket(0);
+        try {  
+             ServerSocket sv = new ServerSocket(0);
             int port = sv.getLocalPort();
-            
-            //2.Listen for Clients
             Socket c;
             c = sv.accept();
             PeerHandler ph = new PeerHandler(c);
             ph.start();
             
-            
-                
             //1.Create Client Socket and connect to the server
             Socket client = new Socket("127.0.0.1", 1234);
             //2.if accepted create IO streams
@@ -74,6 +73,7 @@ class Peer {
             String userInput;
             //3.Perform IO operations
             while (true) {
+            
                 Message m= new Message();
                 //read the response from the server
                 m = (Message)dis.readObject();
@@ -82,19 +82,24 @@ class Peer {
                 
                 if (m.msg == Message.MsgType.Enter_Name) {
                     userInput = sc.nextLine();
-                    m.dataTosend(Message.MsgType.User_Name, userInput);
-                    dos.writeObject(m);
+                    dos.writeObject(new User_Message(new User(userInput,port)));
+                }
+                
+                dos.writeObject(new Message(Message.MsgType.Bye));
+                
+                if (m.msg == Message.MsgType.Bye) {
+                    break;
                 }
                 
                 //read from the user
-                userInput = sc.nextLine();
-                dos.writeUTF(userInput);
-                
-                Message m1= new Message();
-                m1.dataTosend(Message.MsgType.Create_Group, "Group1");
-                
-                System.out.println(m1.data);
-                System.out.println(m1.msg);
+//                userInput = sc.nextLine();
+//                dos.writeUTF(userInput);
+//                
+//                Message m1= new Message();
+//                m1.dataTosend(Message.MsgType.Create_Group, "Group1");
+//                
+//                System.out.println(m1.data);
+//                System.out.println(m1.msg);
                
                 
             }

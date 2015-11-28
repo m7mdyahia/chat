@@ -7,12 +7,17 @@ public class User
 	String username;
 	InetAddress ip;
 	int port;
-	bool is_online;
-	public User(String username, InetAddress ip) {
+	boolean is_online;
+	public User(String username,int port) {
+		super();
+		this.username = username;
+                this.port = port;
+	}
+	
+	public User(String username,InetAddress ip,int port) {
 		super();
 		this.username = username;
 		this.ip = ip;
-	}
-	
-	
+                this.port = port;
+	}	
 }
