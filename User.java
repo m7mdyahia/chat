@@ -14,5 +14,4 @@ public class User
 		this.ip = ip;
 	}
 	
-	
 }
