@@ -10,11 +10,13 @@ public class Message implements Serializable{
         Enter_Name,
         User_Name, //sending username and port
         Create_Group,
-        List_Groups,
+        List_Groups, //list available groups
         Join_Group,
         Conv_Msg,
-        List_Users,
+        Group_Msg,
+        List_Users, //list online users
         Bye
+        
     }
     public Message() {
 		super();

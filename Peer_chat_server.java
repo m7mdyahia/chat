@@ -69,9 +69,11 @@ class clientHandler extends Thread {
               case Join_Group:
             	   chat_server.join(request.data,user_identification);
             	  break;
+
               case Conv_Msg_sent:
             	  broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
             	  chat_server.broadcast(sent_message.data,sent_message.group,user_identification);
+
 			default:
 				break;
 			}
