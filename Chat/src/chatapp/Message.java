@@ -2,10 +2,7 @@ package chatapp;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author Mohammad Yahia
- */
+
 public class Message {
     
     public enum MsgType {
@@ -25,12 +22,28 @@ public class Message {
 		this.msg = msg;
 		this.data = data;
 	}
+    public Message(MsgType msg) {
+		super();
+		this.msg = msg;
+	}
 	public MsgType msg;
     public String data;
     public void dataTosend(MsgType m,String d){
         this.msg= m;
         this.data= d;
     }
+}
+
+class User_Message extends Message
+{
+	
+	public User_Message(User user) {
+		super( MsgType.User_Name);
+		this.user = user;
+	}
+
+	User user; 
+	
 }
 
 class ListofUseres extends Message
