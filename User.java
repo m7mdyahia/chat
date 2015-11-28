@@ -8,6 +8,16 @@ public class User
 	InetAddress ip;
 	int port;
 	boolean is_online;
+	
+	
+	public User(User user) {
+		super();
+		this.username = user.username;
+		this.ip = user.ip;
+		this.port = user.port;
+		this.is_online = user.is_online;
+	}
+
 	public User(String username,int port) {
 		super();
 		this.username = username;

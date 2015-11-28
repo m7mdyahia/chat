@@ -32,12 +32,14 @@ class clientHandler extends Thread {
             while (true) {
                 dos.writeObject(new Message(Message.MsgType.Enter_Name));
                 
-                User user_identification = null;
+                
                 User_Message um = (User_Message)dis.readObject();
-                user_identification.username = um.user.username;
-                user_identification.port = um.user.port;
-                user_identification.ip = ;
-                user_identification.is_online = true;
+                User user_identification = new User(um.user); 
+                user_identification.is_online = true;	
+//                user_identification.username = um.user.username;
+//                user_identification.port = um.user.port;
+//                user_identification.ip = user.getInetAddress();
+                
                 
                 //Checks must be performed
             //Add ip and user name to vector    
