@@ -118,8 +118,8 @@ public class Peer_chat_server {
     /**
      * @param args the command line arguments
      */
-	
     public void start() {
+
         // TODO code application logic here
         try {
             

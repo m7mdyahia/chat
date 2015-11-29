@@ -17,7 +17,7 @@ public class user_interface {
         switch (userInput)
         {
             case 1:
-                new Peer_chat_server().start();
+                new Peer_chat_server().Start();
                 break;
             case 2:
                 p = new Peer();
@@ -31,7 +31,6 @@ public class user_interface {
                         case 1:
                             System.out.println("test case 1");
                             p.update_me();
-                            
                             break;
                         case 2:
                             System.out.println("Enter peer name:");
