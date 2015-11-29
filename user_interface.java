@@ -13,7 +13,7 @@ public class user_interface {
         switch (userInput)
         {
             case 1:
-                new Peer_chat_server().start();
+                new Peer_chat_server().Start();
                 break;
             case 2:
                 p = new Peer();
@@ -25,8 +25,7 @@ public class user_interface {
                     {
                         case 1:
                             p.exit();
-                        case 2:
-                            p.creategroup();
+                        
                     }
                 }
             default:

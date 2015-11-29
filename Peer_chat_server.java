@@ -117,7 +117,7 @@ public class Peer_chat_server {
      * @param args the command line arguments
      */
 	
-    public  Peer_chat_server() {
+    public  void Start() {
         // TODO code application logic here
         try {
             
