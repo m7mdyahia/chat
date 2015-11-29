@@ -62,13 +62,14 @@ class serverConnection extends Thread {
     { 
         try 
         {
-            System.out.println(client.getInetAddress());
             dos.writeObject(new Message(Message.MsgType.List_Users));
             p.list_of_users=((ListofUseres)dis.readObject()).userlist;
-            System.out.println(p.list_of_users.get(0).username);
+            for (User x : p.list_of_users) {
+            	System.out.print(x.username + ", ");
+            }
             
-            dos.writeObject(new Message(Message.MsgType.List_Groups));
-            p.group_list=((ListofGroups)dis.readObject()).grouplist;
+         //   dos.writeObject(new Message(Message.MsgType.List_Groups));
+          //  p.group_list=(ArrayList<available_groups>) ((ListofGroups)dis.readObject()).grouplist;
         } catch (IOException ex) {
             Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -330,11 +331,13 @@ class Peer {
     
     public void call_peer(String name) { 
         for (User user : list_of_users){
-            if(user.username == name)
-                peer_callee = user;
+            if(user.username.equalsIgnoreCase(name)){
+                peer_callee = user;}
         }
+        System.out.println("Your Peer is:" + peer_callee.username);
         PeerConnection pc = new PeerConnection(this);
         pc.start();
+        
     }
     
     public void start() 
@@ -348,8 +351,8 @@ class Peer {
             sc.start();
             sc.join();
             
-//            PeerListener pl = new PeerListener(sv);
-//            pl.start();   
+            PeerListener pl = new PeerListener(sv);
+           pl.start();   
         } 
         catch (Exception e) 
         {
