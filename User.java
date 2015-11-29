@@ -10,7 +10,7 @@ public class User implements Serializable
 	InetAddress ip;
 	int port;
 	boolean is_online;
-	Socket socket;
+	//Socket socket;
 	
 	
 	public User(User user) {
@@ -41,6 +41,6 @@ public class User implements Serializable
 		this.ip = ip;
 		this.port = port;
 		this.is_online = is_online;
-		this.socket = socket;
+		//this.socket = socket;
 	}	
 }

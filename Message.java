@@ -2,6 +2,7 @@ package chatapp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Message implements Serializable{
@@ -55,12 +56,12 @@ class User_Message extends Message
 class ListofUseres extends Message
 {
 	
-	public ListofUseres(ArrayList<User> userlist) {
+	public ListofUseres(List<User> user_List) {
 		super( MsgType.List_Users);
-		this.userlist = userlist;
+		this.userlist = user_List;
 	}
 
-	ArrayList<User> userlist;
+	List<User> userlist;
 }
 
 class ListofGroups extends Message
@@ -70,12 +71,12 @@ class ListofGroups extends Message
 		super( MsgType.List_Groups, data);
 		this.grouplist = grouplist;
 	}
-	public ListofGroups(ArrayList<available_groups> grouplist) {
+	public ListofGroups(List<available_groups> available_groups_list) {
 		super( MsgType.List_Groups);
-		this.grouplist = grouplist;
+		this.grouplist = available_groups_list;
 	}
 
-	ArrayList<available_groups> grouplist;
+	List<available_groups> grouplist;
 }
 class broadcast_messsage_send  extends Message
 {

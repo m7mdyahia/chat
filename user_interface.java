@@ -17,7 +17,7 @@ public class user_interface {
         switch (userInput)
         {
             case 1:
-                new Peer_chat_server().Start();
+                new Peer_chat_server().start();
                 break;
             case 2:
                 p = new Peer();

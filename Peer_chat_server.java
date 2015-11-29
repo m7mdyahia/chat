@@ -11,8 +11,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.acl.Group;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Iterator;
+import java.util.List;
 
 import chatapp.Message.MsgType;
 
@@ -41,9 +43,9 @@ class clientHandler extends Thread {
             User user_identification = new User(um.user); 
             user_identification.is_online = true;	
             user_identification.ip = user.getInetAddress();
-            user_identification.socket=user;
+            //user_identification.socket=user;
             
-             System.out.println("user arrived "+user_identification.username);
+            System.out.println("user arrived "+user_identification.username);
             chat_server.user_List.add(user_identification);
             System.out.println("I added u to list");
             
@@ -111,13 +113,11 @@ class clientHandler extends Thread {
 }
 
 public class Peer_chat_server {
-	ArrayList<User> user_List;
-	ArrayList<available_groups> available_groups_list;
-	ArrayList<clientHandler> threadlist;
+	List<User> user_List =Collections.synchronizedList(new ArrayList<User>()) ;
+	List<available_groups> available_groups_list=Collections.synchronizedList(new ArrayList<available_groups>());
+	List<available_groups> threadlist=Collections.synchronizedList(new ArrayList<available_groups>());
 
-    /**
-     * @param args the command line arguments
-     */
+ 
     public void start() {
 
         // TODO code application logic here
@@ -243,14 +243,14 @@ class BroadcastThread extends Thread
 		{
 			if(u.is_online)//By medo
 			{
-				try 
-				{
-					dos= new ObjectOutputStream(u.socket.getOutputStream());
-					dos.writeObject(new broadcast_messsage_send(messag_text,group.name,sender_name));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try 
+//				{
+//					dos= new ObjectOutputStream(u.socket.getOutputStream());
+//					dos.writeObject(new broadcast_messsage_send(messag_text,group.name,sender_name));
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
 		}
 	}

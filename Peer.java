@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ class serverConnection extends Thread {
             System.out.println(client.getInetAddress());
             dos.writeObject(new Message(Message.MsgType.List_Users));
             p.list_of_users=((ListofUseres)dis.readObject()).userlist;
-            System.out.println("I got the list");
+            System.out.println(p.list_of_users.get(0).username);
             
             dos.writeObject(new Message(Message.MsgType.List_Groups));
             p.group_list=((ListofGroups)dis.readObject()).grouplist;
@@ -320,7 +321,7 @@ class Peer {
      */
     serverConnection sc;
     
-    public ArrayList<User>  list_of_users;
+    public List<User>  list_of_users;
     public ArrayList<available_groups> group_list;
     public User peer_callee;
     
