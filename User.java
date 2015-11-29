@@ -2,6 +2,7 @@ package chatapp;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.Socket;
 
 public class User implements Serializable
 {
@@ -9,6 +10,7 @@ public class User implements Serializable
 	InetAddress ip;
 	int port;
 	boolean is_online;
+	Socket socket;
 	
 	
 	public User(User user) {
@@ -30,5 +32,15 @@ public class User implements Serializable
 		this.username = username;
 		this.ip = ip;
                 this.port = port;
+	}
+
+	public User(String username, InetAddress ip, int port, boolean is_online,
+			Socket socket) {
+		super();
+		this.username = username;
+		this.ip = ip;
+		this.port = port;
+		this.is_online = is_online;
+		this.socket = socket;
 	}	
 }

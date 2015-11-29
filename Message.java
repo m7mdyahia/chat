@@ -7,15 +7,17 @@ import java.util.ArrayList;
 public class Message implements Serializable{
     
     public enum MsgType {
-        Enter_Name,
-        User_Name, //sending username and port
-        Create_Group,
+        Enter_Name,//sever asks client for identification
+        User_Name, //client reply  user name and port
+        Create_Group,//peer sends a request of new group 
         List_Groups, //list available groups
         Join_Group,
         Conv_Msg,
         Group_Msg,
         List_Users, //list online users
-        Bye
+        Bye,
+        group_chat_message,
+        
         
     }
     public Message() {
@@ -77,12 +79,18 @@ class ListofGroups extends Message
 }
 class broadcast_messsage_send  extends Message
 {
-	String group;
-
+	String group_name;
+	String sender_name;
 	public broadcast_messsage_send(String resala_nafsha,String group_name) {
-		super(  MsgType.Conv_Msg, group_name);
-		this.group=group;
-		// TODO Auto-generated constructor stub
+		super(MsgType.group_chat_message, resala_nafsha);
+		this.group_name=group_name;
+		
+	}
+	public broadcast_messsage_send(String resala_nafsha,String group_name,String sender_name) {
+		super(MsgType.group_chat_message, resala_nafsha);
+		this.group_name=group_name;
+		this.sender_name=sender_name;
+		
 	}
 	
 }

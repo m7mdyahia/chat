@@ -2,19 +2,23 @@ package chatapp;
 import java.awt.TrayIcon.MessageType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.acl.Group;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Iterator;
 
 import chatapp.Message.MsgType;
 
 class clientHandler extends Thread {
 
-    private Socket user;
+    Socket user;
     Peer_chat_server chat_server;
 
     // constructor
@@ -30,17 +34,20 @@ class clientHandler extends Thread {
             ObjectOutputStream dos = new  ObjectOutputStream(user.getOutputStream());
             ObjectInputStream dis = new ObjectInputStream(user.getInputStream());
             
+            dos.writeObject(new Message(Message.MsgType.Enter_Name));
+            
+            
+            User_Message um = (User_Message)dis.readObject();
+            User user_identification = new User(um.user); 
+            user_identification.is_online = true;	
+            user_identification.ip = user.getInetAddress();
+            user_identification.socket=user;
+            
+             System.out.println("user arrived "+user_identification.username);
+            chat_server.user_List.add(user_identification);    
+            
             while (true) {
-                dos.writeObject(new Message(Message.MsgType.Enter_Name));
-                
-                
-                User_Message um = (User_Message)dis.readObject();
-                User user_identification = new User(um.user); 
-                user_identification.is_online = true;	
-                user_identification.ip = user.getInetAddress();
-                
-                 System.out.println(user_identification.username);
-                chat_server.user_List.add(user_identification);        
+           
                                          
                Message request = (Message)dis.readObject();
         
@@ -70,9 +77,9 @@ class clientHandler extends Thread {
             	   chat_server.join(request.data,user_identification);
             	  break;
 
-              case Conv_Msg_sent:
+              case group_chat_message:
             	  broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
-            	  chat_server.broadcast(sent_message.data,sent_message.group,user_identification);
+            	  new BroadcastThread(sent_message,chat_server,user_identification.username).start();
 
 			default:
 				break;
@@ -104,12 +111,13 @@ class clientHandler extends Thread {
 public class Peer_chat_server {
 	ArrayList<User> user_List;
 	ArrayList<available_groups> available_groups_list;
+	ArrayList<clientHandler> threadlist;
 
     /**
      * @param args the command line arguments
      */
 	
-    public  void start() {
+    public  Peer_chat_server() {
         // TODO code application logic here
         try {
             
@@ -119,6 +127,7 @@ public class Peer_chat_server {
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
+                threadlist.add(user_thread);
                 user_thread.start();
 
             }
@@ -165,7 +174,7 @@ class available_groups
 {
 	String name;
 	ArrayList<User> group_useres;
-	
+	//Dictionary<String, User> group_dic;
 	
 	public available_groups(String name) {
 		super();
@@ -197,7 +206,53 @@ class available_groups
 	
 }
 
+class BroadcastThread extends Thread
+{
+	String messag_text;
+	available_groups group;
+	String sender_name;
+	 
+	public BroadcastThread(String messag_text, available_groups group) {
+		super();
+		this.messag_text = messag_text;
+		this.group = group;
+	}
 
+
+
+	public BroadcastThread(broadcast_messsage_send sent_message,
+			Peer_chat_server chat_server, String sender_name) {
+		this.messag_text=sent_message.data;
+		this.sender_name = sender_name;
+		
+		for (available_groups g : chat_server.available_groups_list) {
+			if(g.name == sent_message.group_name);
+			group=g;
+		}
+	}
+
+
+	public void run()
+	{
+		ObjectOutputStream dos ; 
+		for (User u : group.group_useres )
+		{
+			if(u.is_online)//By medo
+			{
+				try 
+				{
+					dos= new ObjectOutputStream(u.socket.getOutputStream());
+					dos.writeObject(new broadcast_messsage_send(messag_text,group.name,sender_name));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+}
 
 
 
