@@ -119,8 +119,7 @@ class PeerListener extends Thread
 
 class PeerHandler extends Thread {
     
-    String receivedMsg;
-    String SentMsg;
+    
      Socket client;
     // constructor
     public PeerHandler(Socket client) {
@@ -138,6 +137,7 @@ class PeerHandler extends Thread {
             
             PeerHandlerSender phw = new PeerHandlerSender(this);
             phw.start();
+            phw.join();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -147,6 +147,7 @@ class PeerHandler extends Thread {
 
 class PeerHandlerReader extends Thread 
 {
+	String receivedMsg;
     PeerHandler ph;
     ObjectInputStream dis;
     public PeerHandlerReader (PeerHandler p) { this.ph = p; }
@@ -162,17 +163,17 @@ class PeerHandlerReader extends Thread
                     dis = new ObjectInputStream(ph.client.getInputStream());
                     
                     try {
-                        if(((Message)dis.readObject()).msg == Message.MsgType.Conv_Msg)
+                        if(((Message)dis.readObject()).msg.equals(Message.MsgType.Conv_Msg))
                         {
-                            ph.receivedMsg = ((Message)dis.readObject()).data;
-                            System.out.println(ph.receivedMsg);
+                            receivedMsg = ((Message)dis.readObject()).data;
+                            System.out.println(receivedMsg);
                         }
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(PeerHandlerReader.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     
                     try {
-                        if(((Message)dis.readObject()).msg == Message.MsgType.Bye)
+                        if(((Message)dis.readObject()).msg.equals(Message.MsgType.Bye))
                         {
                             break;
                         }
@@ -194,6 +195,7 @@ class PeerHandlerReader extends Thread
 
 class PeerHandlerSender extends Thread 
 {
+	String SentMsg;
     PeerHandler ph;
     ObjectOutputStream dos;
     public PeerHandlerSender (PeerHandler p) { this.ph = p; }
@@ -205,9 +207,9 @@ class PeerHandlerSender extends Thread
         while (true)
         {
             try {
-                ph.SentMsg = sc.nextLine();
-                dos.writeObject(new Message(Message.MsgType.Conv_Msg,ph.SentMsg));
-                System.out.println(ph.SentMsg);
+            	dos = new ObjectOutputStream(ph.client.getOutputStream());
+                SentMsg = sc.nextLine();
+                dos.writeObject(new Message(Message.MsgType.Conv_Msg,SentMsg));
                 
             } catch (IOException ex) {
                 Logger.getLogger(PeerConnectionSender.class.getName()).log(Level.SEVERE, null, ex);
@@ -218,12 +220,10 @@ class PeerHandlerSender extends Thread
 }
 
 class PeerConnection extends Thread {
-    String receivedMsg;
-    String SentMsg;
+    
     Peer PP;
     Socket clientP;
     public PeerConnection (Peer p) { this.PP = p; }
-    ObjectOutputStream dos;
     
     
     @Override
@@ -238,7 +238,7 @@ class PeerConnection extends Thread {
             
             PeerConnectionSender pcs = new PeerConnectionSender(this);
             pcs.start();
-            
+            pcs.join();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -247,6 +247,7 @@ class PeerConnection extends Thread {
 
 class PeerConnectionReader extends Thread 
 {
+	String receivedMsg;
     PeerConnection pc;
     ObjectInputStream dis;
     public PeerConnectionReader (PeerConnection p) { this.pc = p; }
@@ -261,16 +262,16 @@ class PeerConnectionReader extends Thread
                     dis = new ObjectInputStream(pc.clientP.getInputStream());
                     
                     try {
-                        if(((Message)dis.readObject()).msg == Message.MsgType.Conv_Msg)
+                        if(((Message)dis.readObject()).msg.equals(Message.MsgType.Conv_Msg))
                         {
-                            pc.receivedMsg = ((Message)dis.readObject()).data;
-                            System.out.println(pc.receivedMsg);
+                            receivedMsg = ((Message)dis.readObject()).data;
+                            System.out.println(receivedMsg);
                         }
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     try {
-                        if(((Message)dis.readObject()).msg == Message.MsgType.Bye)
+                        if(((Message)dis.readObject()).msg.equals(Message.MsgType.Bye))
                         {
                             break;
                         }
@@ -291,6 +292,7 @@ class PeerConnectionReader extends Thread
 
 class PeerConnectionSender extends Thread 
 {
+	String sentMsg;
     PeerConnection pc;
     ObjectOutputStream dos;
     public PeerConnectionSender (PeerConnection p) { this.pc = p; }
@@ -302,9 +304,9 @@ class PeerConnectionSender extends Thread
         while (true)
         {
             try {
-                pc.SentMsg = sc.nextLine();
-                dos.writeObject(new Message(Message.MsgType.Conv_Msg,pc.SentMsg));
-                System.out.println(pc.SentMsg);
+            	dos = new ObjectOutputStream(pc.clientP.getOutputStream());
+            	sentMsg = sc.nextLine();
+            	dos.writeObject(new Message(Message.MsgType.Conv_Msg,sentMsg));
                 
             } catch (IOException ex) {
                 Logger.getLogger(PeerConnectionSender.class.getName()).log(Level.SEVERE, null, ex);
@@ -337,7 +339,12 @@ class Peer {
         System.out.println("Your Peer is:" + peer_callee.username);
         PeerConnection pc = new PeerConnection(this);
         pc.start();
-        
+        try {
+			pc.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public void start() 
@@ -352,7 +359,7 @@ class Peer {
             sc.join();
             
             PeerListener pl = new PeerListener(sv);
-           pl.start();   
+            pl.start();   
         } 
         catch (Exception e) 
         {
