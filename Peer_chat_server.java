@@ -50,7 +50,7 @@ class clientHandler extends Thread {
            
                                          
                Message request = (Message)dis.readObject();
-        
+                System.out.println("I got a new request");
                 
               switch (request.msg) {
               case Bye:
@@ -59,6 +59,7 @@ class clientHandler extends Thread {
               }
               case List_Users:
               {
+                  System.out.println("here i'm writing your list");
             	  dos.writeObject(new ListofUseres(chat_server.user_List));
                   break;
               }

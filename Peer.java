@@ -22,41 +22,6 @@ class serverConnection extends Thread {
 
     public serverConnection (Peer p) { this.p = p; }
     
-    public void update_me() 
-    { 
-        try 
-        {
-            dos = new ObjectOutputStream(client.getOutputStream());
-            dis = new ObjectInputStream(client.getInputStream());
-    
-            dos.writeObject(new Message(Message.MsgType.List_Users));
-            p.list_of_users=((ListofUseres)dis.readObject()).userlist;
-            
-            dos.writeObject(new Message(Message.MsgType.List_Groups));
-            p.group_list=((ListofGroups)dis.readObject()).grouplist;
-        } catch (IOException ex) {
-            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
- 
-    public void exit()
-    {
-        try 
-        {
-            dos = new ObjectOutputStream(client.getOutputStream());
-            
-            dos.writeObject(new Message(Message.MsgType.Bye));
-            dis.close();
-            dos.close();
-            client.close();
-        } catch (IOException ex) {
-            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
     @Override
     public void run() 
     { 
@@ -90,6 +55,40 @@ class serverConnection extends Thread {
         catch (Exception e) 
         {
             System.out.println(e.getMessage());
+        }
+    }
+    
+    public void update_me() 
+    { 
+        try 
+        {
+            System.out.println(client.getInetAddress());
+            dos.writeObject(new Message(Message.MsgType.List_Users));
+            p.list_of_users=((ListofUseres)dis.readObject()).userlist;
+            System.out.println("I got the list");
+            
+            dos.writeObject(new Message(Message.MsgType.List_Groups));
+            p.group_list=((ListofGroups)dis.readObject()).grouplist;
+        } catch (IOException ex) {
+            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+ 
+    public void exit()
+    {
+        try 
+        {
+            dos = new ObjectOutputStream(client.getOutputStream());
+            
+            dos.writeObject(new Message(Message.MsgType.Bye));
+            dis.close();
+            dos.close();
+            client.close();
+        } catch (IOException ex) {
+            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
@@ -347,6 +346,7 @@ class Peer {
             
             sc = new serverConnection(this);
             sc.start();
+            sc.join();
             
 //            PeerListener pl = new PeerListener(sv);
 //            pl.start();   
