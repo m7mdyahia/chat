@@ -117,7 +117,7 @@ public class Peer_chat_server {
      * @param args the command line arguments
      */
 	
-    public  Peer_chat_server() {
+    public void start() {
         // TODO code application logic here
         try {
             
@@ -127,13 +127,15 @@ public class Peer_chat_server {
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
-                threadlist.add(user_thread);
+              //  threadlist.add(user_thread);
+                 System.out.println("Hey");
                 user_thread.start();
+               
 
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+//            System.out.println(e.getMessage());
         }
 
     }
