@@ -44,7 +44,8 @@ class clientHandler extends Thread {
             user_identification.socket=user;
             
              System.out.println("user arrived "+user_identification.username);
-            chat_server.user_List.add(user_identification);    
+            chat_server.user_List.add(user_identification);
+            System.out.println("I added u to list");
             
             while (true) {
            
