@@ -18,7 +18,7 @@ public class Message implements Serializable{
         List_Users, //list online users
         Bye,
         group_chat_message,
-        Leave_group, //user can leave group
+        Leave_Group, //user can leave group
         
         
     }
