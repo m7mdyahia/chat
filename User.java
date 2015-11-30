@@ -2,7 +2,6 @@ package chatapp;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.Socket;
 
 public class User implements Serializable
 {

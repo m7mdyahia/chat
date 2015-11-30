@@ -1,22 +1,12 @@
 package chatapp;
-import java.awt.TrayIcon.MessageType;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
-
-import chatapp.Message.MsgType;
 
 class clientHandler extends Thread {
 
@@ -115,7 +105,7 @@ class clientHandler extends Thread {
 public class Peer_chat_server {
 	List<User> user_List =Collections.synchronizedList(new ArrayList<User>()) ;
 	List<available_groups> available_groups_list=Collections.synchronizedList(new ArrayList<available_groups>());
-	List<available_groups> threadlist=Collections.synchronizedList(new ArrayList<available_groups>());
+	List<clientHandler> threadlist=Collections.synchronizedList(new ArrayList<clientHandler>());
 
  
     public void start() {
@@ -129,8 +119,8 @@ public class Peer_chat_server {
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
-              //  threadlist.add(user_thread);
-                 System.out.println("Hey");
+                threadlist.add(user_thread);
+                System.out.println("Hey");
                 user_thread.start();
                
 

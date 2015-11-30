@@ -1,7 +1,5 @@
 package chatapp;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -361,4 +359,31 @@ class Peer {
           System.out.println(e.getMessage());
         }
     }
+	public void creategroup(String groupname) {
+		try {
+			sc.dos.writeObject(new Message(Message.MsgType.Create_Group,groupname));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public void joingroup(String group_name) {
+		try {
+			sc.dos.writeObject(new Message(Message.MsgType.Join_Group,group_name));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public void send_group_message(String gropname, String message) {
+		try {
+			sc.dos.writeObject(new broadcast_messsage_send(message,gropname));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }
