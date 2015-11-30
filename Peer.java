@@ -148,15 +148,11 @@ class PeerHandler extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("New Friend Arrived");
-            
-            //Perform IO Operations
-            
+            System.out.println("New Friend Arrived");             
             
             dos = new ObjectOutputStream(client.getOutputStream());
             PeerHandlerSender phw = new PeerHandlerSender(dos);
-            phw.start();
-            
+            phw.start();            
             
             dis = new ObjectInputStream(client.getInputStream());
             PeerHandlerReader phr = new PeerHandlerReader(dis);
@@ -189,11 +185,11 @@ class PeerHandlerReader extends Thread
 		        
 		        try {
 		        	receivedMsg=((Message)dis.readObject());
-		        	//System.out.println("we recived a new message");
+		        //	System.out.println("we recived a new message");
 		        	
 		            if(receivedMsg.msg.equals(Message.MsgType.Conv_Msg))
 		            {
-		            	//System.out.println("we recived a new conv message");
+		            //	System.out.println("we recived a new conv message");
 		               // System.out.println("A new message arrived");
 		                System.out.println(receivedMsg.data);
 		            }
@@ -235,13 +231,14 @@ class PeerHandlerSender extends Thread
     {
         while (true)
         {    
-                SentMsg = sc.nextLine();
-               // System.out.println("tring to send"+SentMsg);
+        	if(sc.hasNextLine())
+               SentMsg = sc.nextLine();
+               System.out.println("tring to send"+SentMsg);
                 try {
 					dos.writeObject(new Message(Message.MsgType.Conv_Msg,SentMsg));
 				//	System.out.println("we sent"+SentMsg);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
                 

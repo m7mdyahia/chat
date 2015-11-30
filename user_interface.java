@@ -7,6 +7,7 @@ public class user_interface {
     {
             // TODO Auto-generated method stub
         Scanner sc = new Scanner(System.in);
+        int userInput2=4;
         
         int userInput;
         
@@ -25,7 +26,12 @@ public class user_interface {
 //                while(true)
 //                {
                 	System.out.println("Enter your choice:");
-                    int userInput2= sc.nextInt();
+                	if(sc.hasNextInt())
+                	{
+                	System.out.println("we considered this int");
+                     userInput2= sc.nextInt();
+                    
+                	}
                     switch (userInput2)
                     {
                         case 1:
@@ -38,11 +44,14 @@ public class user_interface {
                             nameInput = sm.nextLine();
                             p.call_peer(nameInput);
                         case 3:
-                            p.exit(); 
+                            p.exit();
+                        case 4:
+                        	sc.close();
                     }
 //                }
             default:
                 break;
         }
-    }
+   System.out.println("exiting main of interface");
+   }
 }
