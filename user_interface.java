@@ -22,9 +22,9 @@ public class user_interface {
             case 2:
                 p = new Peer();
                 p.start();
-                while(true)
-                {
-                 System.out.println("Enter your choice:");
+//                while(true)
+//                {
+                	System.out.println("Enter your choice:");
                     int userInput2= sc.nextInt();
                     switch (userInput2)
                     {
@@ -40,7 +40,7 @@ public class user_interface {
                         case 3:
                             p.exit(); 
                     }
-                }
+//                }
             default:
                 break;
         }
