@@ -39,8 +39,8 @@ class serverConnection extends Thread {
             dis = new ObjectInputStream(client.getInputStream());
             
             
-         //   Scanner sc = new Scanner(System.in);
-          // String userInput;
+            //Scanner sc = new Scanner(System.in);
+            //String userInput;
             
             System.out.println("Connection Succesful");
            
@@ -48,7 +48,7 @@ class serverConnection extends Thread {
             //read the response from the server
             m = (Message)dis.readObject();
             //Print response
-            System.out.println("Please enter your name?");
+            //System.out.println("Please enter your name?");
 
             if (m.msg == Message.MsgType.Enter_Name) {
                // userInput = sc.nextLine();
@@ -62,17 +62,23 @@ class serverConnection extends Thread {
         }
     }
     
-    public void update_me() 
+    public synchronized void update_me() 
     { 
         try 
         {
             dos.writeObject(new Message(Message.MsgType.List_Users));
-            p.list_of_users=((ListofUseres)dis.readObject()).userlist;
-            for (User x : p.list_of_users) {
+            System.out.println("i sent update request ");
+            
+           //p.list_of_users= ((ListofUseres)dis.readObject()).userlist;
+          //  p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
+           // List<User> l= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
+            ListofUseres l = ((ListofUseres)dis.readObject());
+            for (User x :l.userlist ) {
             	System.out.print(x.username + ", ");
             }
             
-
+         //   dos.writeObject(new Message(Message.MsgType.List_Groups));
+          //  p.group_list=(ArrayList<available_groups>) ((ListofGroups)dis.readObject()).grouplist;
         } catch (IOException ex) {
             Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -216,9 +222,9 @@ class PeerHandlerReader extends Thread
 class PeerHandlerSender extends Thread 
 {
 	String SentMsg;
-    
+    //PeerHandler ph;
 	ObjectOutputStream dos;
-   
+   // public PeerHandlerSender (PeerHandler p) { this.ph = p; }
     public PeerHandlerSender(ObjectOutputStream dos) {
 		this.dos=dos;
 	}
@@ -229,12 +235,9 @@ class PeerHandlerSender extends Thread
     {
         while (true)
         {    
-        	while(sc.hasNextLine()) {
-        	   
-        	
+        	if(sc.hasNextLine())
                SentMsg = sc.nextLine();
-               System.out.println("tring to send" + SentMsg);
-        	
+               System.out.println("tring to send"+SentMsg);
                 try {
 					dos.writeObject(new Message(Message.MsgType.Conv_Msg,SentMsg));
 				//	System.out.println("we sent"+SentMsg);
@@ -242,10 +245,10 @@ class PeerHandlerSender extends Thread
 					
 					e.printStackTrace();
 				}
-             
+                
            
         }
-        }
+
     }
 }
 
@@ -286,42 +289,95 @@ class PeerConnection extends Thread {
     }
 }
 
-
+//class PeerConnectionReader extends Thread 
+//{
+//	String receivedMsg;
+//    PeerConnection pc;
+//   // ObjectInputStream dis;
+//    public PeerConnectionReader (PeerConnection p) { this.pc = p; }
+//    
+//    @Override
+//    public void run() 
+//    {
+//        try {
+//            while (true)
+//            {
+//                try {
+//                    //dis = new ObjectInputStream(pc.clientP.getInputStream());
+//                    
+//                    try {
+//                        if(((Message)pc.dis.readObject()).msg.equals(Message.MsgType.Conv_Msg))
+//                        {
+//                            receivedMsg = ((Message)pc.dis.readObject()).data;
+//                            System.out.println(receivedMsg);
+//                        }
+//                    } catch (ClassNotFoundException ex) {
+//                        Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                    try {
+//                        if(((Message)pc.dis.readObject()).msg.equals(Message.MsgType.Bye))
+//                        {
+//                            break;
+//                        }
+//                    } catch (ClassNotFoundException ex) {
+//                        Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                } catch (IOException ex) {
+//                    Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//            pc.dis.close();
+//            pc.clientP.close();
+//        } catch (IOException ex) {
+//            Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+//}
+//
+//class PeerConnectionSender extends Thread 
+//{
+//	String sentMsg;
+//    PeerConnection pc;
+//    ObjectOutputStream dos;
+//    public PeerConnectionSender (PeerConnection p) { this.pc = p; }
+//    Scanner sc = new Scanner(System.in);
+//    
+//    @Override
+//    public void run() 
+//    {
+//        while (true)
+//        {
+//            try {
+//            	dos = new ObjectOutputStream(pc.clientP.getOutputStream());
+//            	sentMsg = sc.nextLine();
+//            	dos.writeObject(new Message(Message.MsgType.Conv_Msg,sentMsg));
+//                
+//            } catch (IOException ex) {
+//                Logger.getLogger(PeerConnectionSender.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//
+//    }
+//}
 
 class Peer {
 
     int port;
     String username;
-    
-	 public Peer(String username) {
-		super();
-		this.username = username;
-	}
-
-	/**
+	 /**
      * @param args the command line arguments
      */
     serverConnection sc;
     
-    public List<User>  list_of_users;
-    public List<available_groups> group_list;
-    public List<Calee_user> PeerConnectionList= Collections.synchronizedList(new ArrayList<Calee_user>());
+    public Peer(String s){
+    	this.username=s;
+    }
+    public List<User>  list_of_users=Collections.synchronizedList(new ArrayList<User>()) ;
+    public List<available_groups> group_list=Collections.synchronizedList(new ArrayList<available_groups>());;
     public User peer_callee;
     
     public void exit() { sc.exit(); }
     public void update_me() { sc.update_me(); }
-    public void send(String msg,String username)
-    {
-    	for (Calee_user calee_user : PeerConnectionList) {
-			if(calee_user.username.equals(username))
-				try {
-					calee_user.peerconnection.dos.writeObject(new Message(Message.MsgType.Conv_Msg, msg));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-    }
     
     public void call_peer(String name) { 
         for (User user : list_of_users){
@@ -331,7 +387,6 @@ class Peer {
         System.out.println("Your Peer is:" + peer_callee.username);
         PeerConnection pc = new PeerConnection(this);
         pc.start();
-        PeerConnectionList.add(new Calee_user(peer_callee, pc));
         try {
 			pc.join();// peer will wait until p2p ends
 		} catch (InterruptedException e) {

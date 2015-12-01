@@ -1,4 +1,8 @@
 package chatapp;
+import java.awt.TrayIcon.MessageType;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -11,7 +15,7 @@ import java.util.List;
 class clientHandler extends Thread {
 
     Socket user;
-    Peer_chat_server chat_server;
+    volatile Peer_chat_server chat_server;
 
     // constructor
     public clientHandler(Socket client,Peer_chat_server chat_server) {
@@ -54,6 +58,10 @@ class clientHandler extends Thread {
               {
                   System.out.println("here i'm writing your list");
             	  dos.writeObject(new ListofUseres(chat_server.user_List));
+            	  for (User user : chat_server.user_List) {
+            		  System.out.print(user.username+", ");	
+				}
+            	 
                   break;
               }
               case Create_Group:
@@ -81,10 +89,10 @@ class clientHandler extends Thread {
        
                 
                 
-                //Checks must be performed
-                //user select to create a group chat  or chat to another peer
-                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
-                String Choice = dis.readUTF();
+//                //Checks must be performed
+//                //user select to create a group chat  or chat to another peer
+//                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
+                String Choice = "l";
                 if (Choice.equalsIgnoreCase("N")) {
                     dos.writeUTF("Bye");
                     break;
@@ -115,7 +123,8 @@ public class Peer_chat_server {
             
             ServerSocket sv = new ServerSocket(1234);
             while (true) {
-                
+                System.out.println("Hello from server");
+
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
@@ -247,8 +256,4 @@ class BroadcastThread extends Thread
 	
 	
 }
-
-
-
-
 
