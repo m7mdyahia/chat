@@ -1,4 +1,5 @@
 package chatapp;
+
 import java.awt.TrayIcon.MessageType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -21,7 +22,7 @@ import chatapp.Message.MsgType;
 class clientHandler extends Thread {
 
     Socket user;
-    Peer_chat_server chat_server;
+    volatile Peer_chat_server chat_server;
 
     // constructor
     public clientHandler(Socket client,Peer_chat_server chat_server) {
@@ -50,72 +51,70 @@ class clientHandler extends Thread {
             System.out.println("I added u to list");
             
             while (true) {
-                
-                Message request = (Message)dis.readObject();
+           
+                                         
+               Message request = (Message)dis.readObject();
                 System.out.println("I got a new request");
                 
-                switch (request.msg) 
-                {
-                    case Bye:
-                    {
-                        user_identification.is_online=false;
-                        break;
-                    }
-                    case List_Users:
-                    {
-                        System.out.println("here i'm writing your list");
-                        dos.writeObject(new ListofUseres(chat_server.user_List));
-                        break;
-                    }
-                    case Create_Group:
-                    {        	  
-                        chat_server.available_groups_list.add(new available_groups(request.data,user_identification));
-                        break;		
-                    }
-                    case List_Groups:
-                    {
-                        dos.writeObject(new ListofGroups(chat_server.available_groups_list));
-                        break;
-                    }
-                    case Join_Group:
-                    {
-                        chat_server.join(request.data,user_identification);
-                        break;
-                    }
+              switch (request.msg) {
+              case Bye:
+              {
+            	  user_identification.is_online=false;
+              }
+              case List_Users:
+              {
+                  System.out.println("here i'm writing your list");
+            	  dos.writeObject(new ListofUseres(chat_server.user_List));
+            	  for (User user : chat_server.user_List) {
+            		  System.out.print(user.username+", ");	
+				}
+            	 
+                  break;
+              }
+              case Create_Group:
+              {        	  
+            	  chat_server.available_groups_list.add(new available_groups(request.data,user_identification))
+				;
+				break;		
+              }
+              case List_Groups:
+            	  {
+            		  dos.writeObject(new ListofGroups(chat_server.available_groups_list));
+                       break;
+             }
+              case Join_Group:
+            	   chat_server.join(request.data,user_identification);
+            	  break;
 
-                    case Leave_Group:
-                    {
-                        
-                        break;
-                    }
-                    
-                    case group_chat_message:
-                    {
-                        broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
-                        new BroadcastThread(sent_message,chat_server,user_identification.username).start();
-                        break;
-                    }
-                    default:
-                        break;
-                }
+              case group_chat_message:
+            	  broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
+            	  new BroadcastThread(sent_message,chat_server,user_identification.username).start();
 
-                //Checks must be performed
-                //user select to create a group chat  or chat to another peer
-                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
-                String Choice = dis.readUTF();
+			default:
+				break;
+			}
+       
+                
+                
+//                //Checks must be performed
+//                //user select to create a group chat  or chat to another peer
+//                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
+                String Choice = "l";
                 if (Choice.equalsIgnoreCase("N")) {
                     dos.writeUTF("Bye");
                     break;
                 }
+
             }
-                  //Close/release resources
-                  dis.close();
-                  dos.close();
-                  user.close();
+            //Close/release resources
+            dis.close();
+            dos.close();
+            user.close();
         } catch (Exception e) {
-                  System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
+
 }
 
 public class Peer_chat_server {
@@ -131,7 +130,8 @@ public class Peer_chat_server {
             
             ServerSocket sv = new ServerSocket(1234);
             while (true) {
-                
+                System.out.println("Hello from server");
+
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
                 clientHandler user_thread = new clientHandler(peer,this);
@@ -263,8 +263,4 @@ class BroadcastThread extends Thread
 	
 	
 }
-
-
-
-
 

@@ -34,7 +34,8 @@ public class User implements Serializable
                 this.port = port;
 	}
 
-	public User(String username, InetAddress ip, int port, boolean is_online) {
+	public User(String username, InetAddress ip, int port, boolean is_online,
+			Socket socket) {
 		super();
 		this.username = username;
 		this.ip = ip;
@@ -44,19 +45,3 @@ public class User implements Serializable
 	}	
 }
 
-class Calee_user extends User 
-{
-	PeerConnection peerconnection;
-
-	public Calee_user(String username, InetAddress ip, int port,
-			boolean is_online,PeerConnection peerconnection) {
-		super(username, ip, port, is_online);
-		this.peerconnection=peerconnection;
-		}
-	public Calee_user(User u,PeerConnection peerconnection)
-	{
-		super(u);
-		this.peerconnection=peerconnection;
-	}
-	
-}

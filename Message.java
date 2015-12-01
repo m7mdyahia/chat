@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Message implements Serializable{
     
     public enum MsgType {
@@ -18,7 +17,6 @@ public class Message implements Serializable{
         List_Users, //list online users
         Bye,
         group_chat_message,
-        Leave_Group, //user can leave group
         
         
     }
