@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +51,7 @@ class serverConnection extends Thread {
 
             if (m.msg == Message.MsgType.Enter_Name) {
                // userInput = sc.nextLine();
+            	dos.reset();
                 dos.writeObject(new User_Message(new User(p.username,p.port)));
             }
 //            dos.writeObject(new Message(Message.MsgType.Bye));
@@ -66,6 +66,7 @@ class serverConnection extends Thread {
     { 
         try 
         {
+        	dos.reset();
             dos.writeObject(new Message(Message.MsgType.List_Users));
             System.out.println("i sent update request ");
             
@@ -93,7 +94,7 @@ class serverConnection extends Thread {
         try 
         {
             dos = new ObjectOutputStream(client.getOutputStream());
-            
+            dos.reset();
             dos.writeObject(new Message(Message.MsgType.Bye));
             dis.close();
             dos.close();
@@ -114,9 +115,11 @@ class PeerListener extends Thread
 {
     ServerSocket sv;
     PeerHandler ph;
-    public PeerListener (ServerSocket s) {
+    Peer peer;
+    public PeerListener (ServerSocket s, Peer peer) {
         this.sv = s;
-    }
+        this.peer = peer ;
+        }
     @Override
     public void run()
     {
@@ -125,12 +128,13 @@ class PeerListener extends Thread
             try {
                 Socket c;
                 c = sv.accept();
-                 ph = new PeerHandler(c);
+                 ph = new PeerHandler(this,c,peer);
                 ph.start();
+                peer.ph=ph;//TODO must be add to list
                 try {
-					ph.join();
+					ph.join();//TODO review
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
             } catch (IOException ex) {
@@ -146,9 +150,14 @@ class PeerHandler extends Thread {
      Socket client;
      ObjectInputStream dis;
      ObjectOutputStream dos;
+     Peer peer;
+     PeerListener pl ;
+     PeerHandlerSender phw;
     // constructor
-    public PeerHandler(Socket client) {
+    public PeerHandler(PeerListener pl,Socket client,Peer p) {
         this.client = client;
+        this.pl = pl ;
+        this.peer =p;
     }
     
     @Override
@@ -157,13 +166,13 @@ class PeerHandler extends Thread {
             System.out.println("New Friend Arrived");             
             
             dos = new ObjectOutputStream(client.getOutputStream());
-            //PeerHandlerSender phw = new PeerHandlerSender(dos);
+             phw = new PeerHandlerSender(dos,peer);
           //  phw.start();            
             
             dis = new ObjectInputStream(client.getInputStream());
-            PeerHandlerReader phr = new PeerHandlerReader(dis);
+            PeerHandlerReader phr = new PeerHandlerReader(this,peer);
             phr.start();
-            phr.join();
+           phr.join();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -173,13 +182,25 @@ class PeerHandler extends Thread {
 class PeerHandlerReader extends Thread 
 {
 	Message receivedMsg;
-   // PeerHandler ph;
+   
 	ObjectInputStream dis;
+	PeerConnection pc ;
+	PeerHandler ph;
+	Peer peer;
    // public PeerHandlerReader (PeerHandler p) { this.ph = p;}
     
-    public PeerHandlerReader(ObjectInputStream dis) {
-		this.dis=dis;
+    public PeerHandlerReader(PeerHandler  ph,Peer pp) {
+		this.ph=ph;
+		this.peer=pp;
+		this.dis=ph.dis;
 		}
+
+	public PeerHandlerReader(PeerConnection peerConnection, Peer pp) {
+	this.pc = peerConnection;
+	this.peer=pp;
+	this.dis=peerConnection.dis;
+		
+}
 
 	@Override
     public void run() 
@@ -190,27 +211,25 @@ class PeerHandlerReader extends Thread
 		       
 		        
 		        try {
+	                System.out.println("i enterd the while loop");
+
 		        	receivedMsg=((Message)dis.readObject());
-		        	System.out.println("we recived a new message: " + receivedMsg.data);
 		        	
+		        	System.out.println("we recived a new message: " + receivedMsg.data);
+		        	peer.main.update_message_box(receivedMsg.data);
 		            if(receivedMsg.msg.equals(Message.MsgType.Conv_Msg))
 		            {
-		            //	System.out.println("we recived a new conv message");
-		               // System.out.println("A new message arrived");
+
 		                System.out.println(receivedMsg.data);
 		            }
 		        } catch (ClassNotFoundException ex) {
 		            Logger.getLogger(PeerHandlerReader.class.getName()).log(Level.SEVERE, null, ex);
 		        }
 		        
-		        try {
-		            if(((Message)dis.readObject()).msg.equals(Message.MsgType.Bye))
-		            {
-		                break;
-		            }
-		        } catch (ClassNotFoundException ex) {
-		            Logger.getLogger(PeerHandlerReader.class.getName()).log(Level.SEVERE, null, ex);
-		        }
+		        if(receivedMsg.msg.equals(Message.MsgType.Bye))
+				{
+				    break;
+				}
 		    } catch (IOException ex) {
 		        Logger.getLogger(PeerHandlerReader.class.getName()).log(Level.SEVERE, null, ex);
 		    }
@@ -221,37 +240,29 @@ class PeerHandlerReader extends Thread
     }
 }
 
-class PeerHandlerSender extends Thread 
+class PeerHandlerSender //extends Thread 
 {
 	String SentMsg;
-    //PeerHandler ph;
+    Peer peer;
 	ObjectOutputStream dos;
    // public PeerHandlerSender (PeerHandler p) { this.ph = p; }
-    public PeerHandlerSender(ObjectOutputStream dos) {
+    public PeerHandlerSender(ObjectOutputStream dos, Peer peer) {
 		this.dos=dos;
+		this.peer=peer;
 	}
-	Scanner sc = new Scanner(System.in);
-    
-    @Override
-    public void run() 
-    {
-        while (true)
-        {    
-        	if(sc.hasNextLine())
-               SentMsg = sc.nextLine();
-               System.out.println("tring to send"+SentMsg);
-                try {
-					dos.writeObject(new Message(Message.MsgType.Conv_Msg,SentMsg));
-				//	System.out.println("we sent"+SentMsg);
-				} catch (IOException e) {
-					
-					e.printStackTrace();
-				}
-                
-           
-        }
-
+    void send(String SentMsg){
+    	
+		try {
+			dos.reset();
+			dos.writeObject(new Message(Message.MsgType.Conv_Msg,SentMsg));
+			System.out.println("we sent"+SentMsg);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
+    
+
 }
 
 /**
@@ -268,8 +279,13 @@ class PeerConnection extends Thread {
     Socket clientP;
     ObjectInputStream dis;
     ObjectOutputStream dos;
+    PeerHandlerReader phr ;
+    PeerHandlerSender pcs;
     public PeerConnection (Peer p) { this.PP = p; }
-    
+    public  void send_message(String msg) {
+		pcs.send(msg);
+		
+	}
     
     @Override
     public void run() {
@@ -278,89 +294,23 @@ class PeerConnection extends Thread {
             clientP = new Socket(PP.peer_callee.ip, PP.peer_callee.port);
             //2.if accepted create IO streams
             dis = new ObjectInputStream(clientP.getInputStream());
-            PeerHandlerReader pcr = new PeerHandlerReader(dis);
-            pcr.start();
+             phr = new PeerHandlerReader(this,PP);
+            phr.start();
             
             dos = new ObjectOutputStream(clientP.getOutputStream());
-       //     PeerHandlerSender pcs = new PeerHandlerSender(dos);
-          //  pcs.start();
+             pcs = new PeerHandlerSender(dos, PP);
+
+            //  pcs.start();
          //   pcs.join();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
+
+
+	
 }
 
-//class PeerConnectionReader extends Thread 
-//{
-//	String receivedMsg;
-//    PeerConnection pc;
-//   // ObjectInputStream dis;
-//    public PeerConnectionReader (PeerConnection p) { this.pc = p; }
-//    
-//    @Override
-//    public void run() 
-//    {
-//        try {
-//            while (true)
-//            {
-//                try {
-//                    //dis = new ObjectInputStream(pc.clientP.getInputStream());
-//                    
-//                    try {
-//                        if(((Message)pc.dis.readObject()).msg.equals(Message.MsgType.Conv_Msg))
-//                        {
-//                            receivedMsg = ((Message)pc.dis.readObject()).data;
-//                            System.out.println(receivedMsg);
-//                        }
-//                    } catch (ClassNotFoundException ex) {
-//                        Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                    try {
-//                        if(((Message)pc.dis.readObject()).msg.equals(Message.MsgType.Bye))
-//                        {
-//                            break;
-//                        }
-//                    } catch (ClassNotFoundException ex) {
-//                        Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                } catch (IOException ex) {
-//                    Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//            pc.dis.close();
-//            pc.clientP.close();
-//        } catch (IOException ex) {
-//            Logger.getLogger(PeerConnectionReader.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-//}
-//
-//class PeerConnectionSender extends Thread 
-//{
-//	String sentMsg;
-//    PeerConnection pc;
-//    ObjectOutputStream dos;
-//    public PeerConnectionSender (PeerConnection p) { this.pc = p; }
-//    Scanner sc = new Scanner(System.in);
-//    
-//    @Override
-//    public void run() 
-//    {
-//        while (true)
-//        {
-//            try {
-//            	dos = new ObjectOutputStream(pc.clientP.getOutputStream());
-//            	sentMsg = sc.nextLine();
-//            	dos.writeObject(new Message(Message.MsgType.Conv_Msg,sentMsg));
-//                
-//            } catch (IOException ex) {
-//                Logger.getLogger(PeerConnectionSender.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//    }
-//}
 
 class Peer {
 
@@ -370,19 +320,30 @@ class Peer {
      * @param args the command line arguments
      */
     serverConnection sc;
-    PeerConnection pc;
+    PeerConnection pc;//TODO convert to list
     PeerListener pl;
+    PeerHandler ph;//TODO convert to list
+    Main main;
     
-    public Peer(String s){
+    public Peer(String s, Main main){
     	this.username=s;
+    	this.main=main;
     }
     public List<User>  list_of_users=Collections.synchronizedList(new ArrayList<User>()) ;
     public List<available_groups> group_list=Collections.synchronizedList(new ArrayList<available_groups>());;
+  
     public User peer_callee;
     
     public void exit() { sc.exit(); }
     public void update_me() { sc.update_me(); }
-    
+    public void send_message_peer(String msg)
+    {
+    	if(pc!=null)//I initiated connection
+    		pc.send_message(msg);
+    	else if(ph!=null)//I received the connection
+    		ph.phw.send(msg);
+    		
+    }
     public void call_peer(String name) { 
         for (User user : list_of_users){
             if(user.username.equalsIgnoreCase(name)){
@@ -410,7 +371,7 @@ class Peer {
             sc.start();
             sc.join();
             
-             pl = new PeerListener(sv);
+             pl = new PeerListener(sv,this);
             pl.start();   
         } 
         catch (Exception e) 
@@ -420,6 +381,7 @@ class Peer {
     }
 	public void creategroup(String groupname) {
 		try {
+			sc.dos.reset();
 			sc.dos.writeObject(new Message(Message.MsgType.Create_Group,groupname));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -429,6 +391,7 @@ class Peer {
 	}
 	public void joingroup(String group_name) {
 		try {
+			sc.dos.reset();
 			sc.dos.writeObject(new Message(Message.MsgType.Join_Group,group_name));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -438,6 +401,7 @@ class Peer {
 	}
 	public void send_group_message(String gropname, String message) {
 		try {
+			sc.dos.reset();
 			sc.dos.writeObject(new broadcast_messsage_send(message,gropname));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

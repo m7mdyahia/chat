@@ -5,7 +5,6 @@ import java.awt.List;
 import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,12 +18,17 @@ import javax.swing.border.EmptyBorder;
 
 public class Main extends JFrame {
 
+	public void update_message_box(String str)
+	{
+		textArea.setText(textArea.getText().trim()+"\n"+str);
+	}
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_2;
     JTextArea textArea = new JTextArea();
 	List list = new List();
 	Peer pe;
+	JLabel l;
 
 	/**
 	 * Launch the application.
@@ -47,14 +51,17 @@ public class Main extends JFrame {
 	 */
 	public Main(String s) {
 		
+		
 		//this.p=p;
+		 pe= new Peer(s,this);
+	     pe.start();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-        
+		setTitle(s);
 
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -94,14 +101,15 @@ public class Main extends JFrame {
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				textArea.setText(textArea.getText().trim()+"\n"+textField.getText());
-                try {
-                	pe.pc.dos.reset();
-					pe.pc.dos.writeObject(new Message(Message.MsgType.Conv_Msg,textField.getText()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				textArea.setText(textArea.getText().trim()+"\n"+s+":"+textField.getText());
+				pe.send_message_peer(s+":"+textField.getText());
+//                try {
+//
+//					pe.                	pe.pc.dos.reset();pc.dos.writeObject(new Message(Message.MsgType.Conv_Msg,textField.getText()));
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
                 
                 textField.setText("".trim());
 
@@ -128,8 +136,12 @@ public class Main extends JFrame {
        // timer.setRepeats(true);
        // timer.start();
 		
-		 pe= new Peer(s);
-	      pe.start();
+//		l = new JLabel("");
+//		l.setBounds(137,3,72,14);
+//		contentPane.add(l);
+//		l.setText(s);
+		
+		
 		  pe.update_me();
 		
 		for(int i=0;i<pe.list_of_users.size();i++)

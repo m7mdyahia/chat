@@ -15,17 +15,17 @@ public class user_interface {
 			
 			break;
 		case 2:
-			Peer p1 = new Peer("Amr");
-			p1.creategroup("CSE2014");
+		//	Peer p1 = new Peer("Amr");
+		//	p1.creategroup("CSE2014");
 			while(true)
 			{
 				msg=sc.nextLine();
-				p1.send_group_message("CSE2014","Testing the group");
+		//		p1.send_group_message("CSE2014","Testing the group");
 			}
 			
 		case 3:
-			Peer p2=new Peer("Ali");
-			p2.joingroup("CSE2014");
+	//		Peer p2=new Peer("Ali");
+	//		p2.joingroup("CSE2014");
 	
 	break;
 
