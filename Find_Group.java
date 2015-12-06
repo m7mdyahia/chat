@@ -49,7 +49,7 @@ public class Find_Group {
 	@SuppressWarnings("deprecation")
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 485, 357);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		List list = new List();
@@ -73,7 +73,7 @@ public class Find_Group {
 		});
 		
 		   
-		btnJoin.setBounds(321, 228, 89, 23);
+		btnJoin.setBounds(321, 228, 100, 23);
 		frame.getContentPane().add(btnJoin);
 		
 		textField = new JTextField();
@@ -115,7 +115,9 @@ public class Find_Group {
 		Scrollbar scrollbar_1 = new Scrollbar();
 		scrollbar_1.setBounds(404, 23, 17, 50);
 		frame.getContentPane().add(scrollbar_1);
+		
+		JButton btnCreatGroup = new JButton("Creat Group");
+		btnCreatGroup.setBounds(321, 262, 100, 23);
+		frame.getContentPane().add(btnCreatGroup);
 	}
-	
-	
 }

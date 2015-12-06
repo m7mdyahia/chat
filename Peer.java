@@ -71,16 +71,10 @@ class serverConnection extends Thread {
             System.out.println("i sent update request ");
             
             p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
-
-           //p.list_of_users= ((ListofUseres)dis.readObject()).userlist;
-          //  p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
-           // List<User> l= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
-            for (User x :p.list_of_users) {
-            	System.out.print(x.username + ", ");
-            }
-            
-         //   dos.writeObject(new Message(Message.MsgType.List_Groups));
-          //  p.group_list=(ArrayList<available_groups>) ((ListofGroups)dis.readObject()).grouplist;
+        
+            dos.reset();   
+            dos.writeObject(new Message(Message.MsgType.List_Groups));
+            p.group_list=Collections.synchronizedList(new ArrayList<available_groups>( ((ListofGroups)dis.readObject()).grouplist));
         } catch (IOException ex) {
             Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -399,6 +393,7 @@ class Peer {
 		}
 		
 	}
+	
 	public void send_group_message(String gropname, String message) {
 		try {
 			sc.dos.reset();

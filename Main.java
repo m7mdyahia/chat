@@ -24,7 +24,6 @@ public class Main extends JFrame {
 	}
 	private JPanel contentPane;
 	private JTextField textField;
-	private JTextField textField_2;
     JTextArea textArea = new JTextArea();
 	List list = new List();
 	Peer pe;
@@ -56,7 +55,7 @@ public class Main extends JFrame {
 		 pe= new Peer(s,this);
 	     pe.start();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 321);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -71,13 +70,10 @@ public class Main extends JFrame {
 	    scrollPane.setViewportView(textArea);
 	    textArea.setEditable(false);
 		
-		JButton btnNewButton = new JButton("Create Group");
-		btnNewButton.setBounds(10, 27, 113, 23);
-		contentPane.add(btnNewButton);
+		JButton btnNewButton = new JButton("Group Chat");
 		
-		JButton btnNewButton_1 = new JButton("Find Group");
-		btnNewButton_1.setBounds(10, 50, 113, 23);
-		contentPane.add(btnNewButton_1);
+		btnNewButton.setBounds(10, 24, 113, 23);
+		contentPane.add(btnNewButton);
 		
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
@@ -103,14 +99,7 @@ public class Main extends JFrame {
 				
 				textArea.setText(textArea.getText().trim()+"\n"+s+":"+textField.getText());
 				pe.send_message_peer(s+":"+textField.getText());
-//                try {
-//
-//					pe.                	pe.pc.dos.reset();pc.dos.writeObject(new Message(Message.MsgType.Conv_Msg,textField.getText()));
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-                
+
                 textField.setText("".trim());
 
 				
@@ -119,15 +108,6 @@ public class Main extends JFrame {
 		});
 		btnSend.setBounds(200, 227, 89, 23);
 		contentPane.add(btnSend);
-		
-		textField_2 = new JTextField();
-		textField_2.setBounds(137, 28, 86, 20);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
-		
-		JLabel lblGroupName = new JLabel("Group Name");
-		lblGroupName.setBounds(147, 11, 86, 14);
-		contentPane.add(lblGroupName);
 		
 		list.setBounds(325, 26, 99, 182);
 		contentPane.add(list);
@@ -174,7 +154,7 @@ public class Main extends JFrame {
 				//System.out.println(pe.list_of_users.size());
 			}
 		});
-		btnNewButton_2.setBounds(0, 238, 39, 23);
+		btnNewButton_2.setBounds(0, 238, 60, 23);
 		contentPane.add(btnNewButton_2);
 		
 	}
