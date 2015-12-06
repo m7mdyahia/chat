@@ -1,12 +1,11 @@
 package chatapp;
-
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Label;
 import java.awt.List;
 import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 
@@ -24,7 +22,10 @@ public class Main extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_2;
-    
+    JTextArea textArea = new JTextArea();
+	List list = new List();
+	Peer pe;
+
 	/**
 	 * Launch the application.
 	 */
@@ -44,7 +45,7 @@ public class Main extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Main(Peer pe) {
+	public Main(String s) {
 		
 		//this.p=p;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,7 +54,6 @@ public class Main extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		List list = new List();
         
 
 		
@@ -61,7 +61,6 @@ public class Main extends JFrame {
 	    scrollPane.setBounds(28, 82, 261, 115);
 	    contentPane.add(scrollPane);
 
-	    JTextArea textArea = new JTextArea();
 	    scrollPane.setViewportView(textArea);
 	    textArea.setEditable(false);
 		
@@ -76,7 +75,11 @@ public class Main extends JFrame {
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println(list.getSelectedItem());
+			//	 System.out.println(list.getSelectedItem());
+				
+				pe.call_peer(list.getSelectedItem());
+				
+				
 			}
 		});
 		btnConnect.setBounds(335, 214, 89, 23);
@@ -90,10 +93,21 @@ public class Main extends JFrame {
 		JButton btnSend = new JButton("Send");
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				textArea.setText(textArea.getText().trim()+"\n"+textField.getText());
+                try {
+                	pe.pc.dos.reset();
+					pe.pc.dos.writeObject(new Message(Message.MsgType.Conv_Msg,textField.getText()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
                 textField.setText("".trim());
+
 				
 			}
+
 		});
 		btnSend.setBounds(200, 227, 89, 23);
 		contentPane.add(btnSend);
@@ -113,6 +127,10 @@ public class Main extends JFrame {
 		//Timer timer = new Timer(1000 ,new MyTimerActionListener());
        // timer.setRepeats(true);
        // timer.start();
+		
+		 pe= new Peer(s);
+	      pe.start();
+		  pe.update_me();
 		
 		for(int i=0;i<pe.list_of_users.size();i++)
     	{
@@ -135,14 +153,13 @@ public class Main extends JFrame {
 		JButton btnNewButton_2 = new JButton("R");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			   // p.start();
 				 pe.update_me();
 				 list.clear();
 
 				for(int i=0;i<pe.list_of_users.size();i++)
 		    	{
 				 list.addItem(pe.list_of_users.get(i).username);}
-				System.out.println(pe.list_of_users.size());
+				//System.out.println(pe.list_of_users.size());
 			}
 		});
 		btnNewButton_2.setBounds(0, 238, 39, 23);

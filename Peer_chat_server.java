@@ -57,6 +57,7 @@ class clientHandler extends Thread {
               case List_Users:
               {
                   System.out.println("here i'm writing your list");
+                  dos.reset();
             	  dos.writeObject(new ListofUseres(chat_server.user_List));
             	  for (User user : chat_server.user_List) {
             		  System.out.print(user.username+", ");	

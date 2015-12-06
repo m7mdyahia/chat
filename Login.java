@@ -96,11 +96,12 @@ public class Login {
 				    thread.start();
 				  }
 				  else if(Client.isSelected())
-				  {   Peer pe= new Peer(textField.getText());
-				      pe.start();
-					  pe.update_me();
+				  { //  Peer pe= new Peer(textField.getText());
+				      //pe.start();
+					  //pe.update_me();
 
-					  Main main=new Main(pe);  frame.setVisible(false); main.setVisible(true);
+					  Main main=new Main(textField.getText());  
+					  frame.setVisible(false); main.setVisible(true);
 				    
 				    }
 				 

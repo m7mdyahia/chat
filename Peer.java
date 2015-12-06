@@ -1,5 +1,4 @@
 package chatapp;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * This class creates a thread which handles connection to server
@@ -69,11 +69,12 @@ class serverConnection extends Thread {
             dos.writeObject(new Message(Message.MsgType.List_Users));
             System.out.println("i sent update request ");
             
+            p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
+
            //p.list_of_users= ((ListofUseres)dis.readObject()).userlist;
           //  p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
            // List<User> l= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
-            ListofUseres l = ((ListofUseres)dis.readObject());
-            for (User x :l.userlist ) {
+            for (User x :p.list_of_users) {
             	System.out.print(x.username + ", ");
             }
             
@@ -112,6 +113,7 @@ class serverConnection extends Thread {
 class PeerListener extends Thread 
 {
     ServerSocket sv;
+    PeerHandler ph;
     public PeerListener (ServerSocket s) {
         this.sv = s;
     }
@@ -123,7 +125,7 @@ class PeerListener extends Thread
             try {
                 Socket c;
                 c = sv.accept();
-                PeerHandler ph = new PeerHandler(c);
+                 ph = new PeerHandler(c);
                 ph.start();
                 try {
 					ph.join();
@@ -155,8 +157,8 @@ class PeerHandler extends Thread {
             System.out.println("New Friend Arrived");             
             
             dos = new ObjectOutputStream(client.getOutputStream());
-            PeerHandlerSender phw = new PeerHandlerSender(dos);
-            phw.start();            
+            //PeerHandlerSender phw = new PeerHandlerSender(dos);
+          //  phw.start();            
             
             dis = new ObjectInputStream(client.getInputStream());
             PeerHandlerReader phr = new PeerHandlerReader(dis);
@@ -189,7 +191,7 @@ class PeerHandlerReader extends Thread
 		        
 		        try {
 		        	receivedMsg=((Message)dis.readObject());
-		        //	System.out.println("we recived a new message");
+		        	System.out.println("we recived a new message: " + receivedMsg.data);
 		        	
 		            if(receivedMsg.msg.equals(Message.MsgType.Conv_Msg))
 		            {
@@ -280,9 +282,9 @@ class PeerConnection extends Thread {
             pcr.start();
             
             dos = new ObjectOutputStream(clientP.getOutputStream());
-            PeerHandlerSender pcs = new PeerHandlerSender(dos);
-            pcs.start();
-            pcs.join();
+       //     PeerHandlerSender pcs = new PeerHandlerSender(dos);
+          //  pcs.start();
+         //   pcs.join();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -368,6 +370,8 @@ class Peer {
      * @param args the command line arguments
      */
     serverConnection sc;
+    PeerConnection pc;
+    PeerListener pl;
     
     public Peer(String s){
     	this.username=s;
@@ -385,7 +389,7 @@ class Peer {
                 peer_callee = user;}
         }
         System.out.println("Your Peer is:" + peer_callee.username);
-        PeerConnection pc = new PeerConnection(this);
+        pc = new PeerConnection(this);
         pc.start();
         try {
 			pc.join();// peer will wait until p2p ends
@@ -406,7 +410,7 @@ class Peer {
             sc.start();
             sc.join();
             
-            PeerListener pl = new PeerListener(sv);
+             pl = new PeerListener(sv);
             pl.start();   
         } 
         catch (Exception e) 
