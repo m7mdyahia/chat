@@ -5,6 +5,8 @@ import java.awt.List;
 import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -26,11 +28,11 @@ public class MainWindow extends JFrame {
 	public void update_list_of_users()
 	{
 		System.out.println(pe.list_of_users.size());
-		list.clear();
+		list.removeAll();
 		for(int i=0;i<pe.list_of_users.size();i++)
     	{
 		 
-		 list.add(pe.list_of_users.get(i).username);
+		 list.add(pe.list_of_users.get(i).username +"online ="+ pe.list_of_users.get(i).is_online);
 		 }
 	}
 	ArrayList<GroupWindow> GroupWindowList;
@@ -63,13 +65,26 @@ public class MainWindow extends JFrame {
 	 */
 	public MainWindow(String s) {
 		
+		addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	JFrame frame = (JFrame)windowEvent.getSource();
+		    	pe.exit();
+		    	System.out.println("exited from server");
+		    	frame.setVisible(false);
+		    	frame.dispose();
+		    }
+		});
+		
 		GroupWindowList=new ArrayList<GroupWindow>();
 		//this.p=p;
 		pe= new Peer(s,this);
 	    pe.start();
 	    
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 321);
+	   
+	    
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setBounds(100, 100, 449, 381);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -127,7 +142,7 @@ public class MainWindow extends JFrame {
 			}
 
 		});
-		btnSend.setBounds(200, 227, 89, 23);
+		btnSend.setBounds(196, 234, 89, 23);
 		contentPane.add(btnSend);
 		
 		list.setBounds(325, 26, 99, 182);
@@ -168,8 +183,10 @@ public class MainWindow extends JFrame {
 				//System.out.println(pe.list_of_users.size());
 			}
 		});
-		btnNewButton_2.setBounds(0, 238, 60, 23);
+		btnNewButton_2.setBounds(10, 308, 60, 23);
 		contentPane.add(btnNewButton_2);
+		
+		
 		
 	}
 	public void update_group_windows() {

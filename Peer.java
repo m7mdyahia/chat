@@ -108,7 +108,7 @@ class serverConnection extends Thread {
     {
         try 
         {
-            dos = new ObjectOutputStream(client.getOutputStream());
+            
             dos.reset();
             dos.writeObject(new Message(Message.MsgType.Bye));
             dis.close();
