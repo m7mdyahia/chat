@@ -8,15 +8,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
 
 
 public class MainWindow extends JFrame {
@@ -27,12 +30,23 @@ public class MainWindow extends JFrame {
 	}
 	public void update_list_of_users()
 	{
-		System.out.println(pe.list_of_users.size());
+		System.out.println("size should sent"+pe.list_of_users.size());
 		list.removeAll();
 		for(int i=0;i<pe.list_of_users.size();i++)
     	{
+			   if(pe.list_of_users.get(i).is_online == true)
+			      {
+			      
+			       list.addItem(pe.list_of_users.get(i).username+" (on)");
+			     
+			       }
+			   else {
+				   
+			       list.addItem(pe.list_of_users.get(i).username+" (off)");
+
+			   }
 		 
-		 list.add(pe.list_of_users.get(i).username +"online ="+ pe.list_of_users.get(i).is_online);
+	//	 list.add(pe.list_of_users.get(i).username +"online ="+ pe.list_of_users.get(i).is_online);
 		 }
 	}
 	ArrayList<GroupWindow> GroupWindowList;
@@ -43,6 +57,7 @@ public class MainWindow extends JFrame {
 	List list = new List();
 	Peer pe;
 	JLabel l;
+	String str;
 
 	/**
 	 * Launch the application.
@@ -64,6 +79,7 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow(String s) {
+		this.str = s; 
 		
 		addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
@@ -81,8 +97,11 @@ public class MainWindow extends JFrame {
 		pe= new Peer(s,this);
 	    pe.start();
 	    
-	   
 	    
+	    
+
+	    
+	   
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 449, 381);
 		contentPane = new JPanel();
@@ -116,7 +135,12 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			//	 System.out.println(list.getSelectedItem());
 				
-				pe.call_peer(list.getSelectedItem());
+				String name_state = list.getSelectedItem();
+			    String name = name_state.substring(0, name_state.indexOf(" "));
+			    String state=name_state.substring(name_state.indexOf(" ")+3,name_state.length()-1);
+			    if(Objects.equals(state, new String("n"))) pe.call_peer(name);
+			    else JOptionPane.showMessageDialog(contentPane, "this user is offline");
+			    
 				
 				
 			}
@@ -133,8 +157,8 @@ public class MainWindow extends JFrame {
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				textArea.setText(textArea.getText().trim()+"\n"+s+":"+textField.getText());
-				pe.send_message_peer(s+":"+textField.getText());
+				textArea.setText(textArea.getText().trim()+"\n"+str+":"+textField.getText());
+				pe.send_message_peer(str+":"+textField.getText());
 
                 textField.setText("".trim());
 
@@ -160,7 +184,7 @@ public class MainWindow extends JFrame {
 		
 		pe.update_me();  
          
-		
+		update_list_of_users();
 	
 		
 		Label label = new Label("Online Users");
@@ -175,11 +199,11 @@ public class MainWindow extends JFrame {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				 pe.update_me();
-				 list.clear();
-
-				for(int i=0;i<pe.list_of_users.size();i++)
-		    	{
-				 list.addItem(pe.list_of_users.get(i).username);}
+				// list.clear();
+		//		update_list_of_users();
+			//	for(int i=0;i<pe.list_of_users.size();i++)
+		    ///	{
+				// list.addItem(pe.list_of_users.get(i).username);}
 				//System.out.println(pe.list_of_users.size());
 			}
 		});

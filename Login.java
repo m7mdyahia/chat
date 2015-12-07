@@ -1,5 +1,6 @@
 package chatapp;
 
+
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,12 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-
 public class Login {
 
 	private JFrame frame;
 	private JTextField textField;
 	private ArrayList<GroupWindow> GroupWindowList;
+	JRadioButton Server, Client;
+	 Peer_chat_server sv ;
+
 	/**
 	 * Launch the application.
 	 */
@@ -50,7 +53,6 @@ public class Login {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		JRadioButton Server, Client;
 		ButtonGroup G;
 		
 		
@@ -81,15 +83,17 @@ public class Login {
 				if(Server.isSelected())
 				  {				  
 
-					Server server=new Server();  frame.setVisible(false); server.setVisible(true);
-				    Peer_chat_server sv = new Peer_chat_server();
+				   sv = new Peer_chat_server();
 				    Thread thread = new Thread() {
 				        public void run() {
 				            sv.start();
+
 				            
 				        }
 				    };
 				    thread.start();
+					Server server=new Server(sv);  frame.setVisible(false); server.setVisible(true);
+
 				  }
 				  else if(Client.isSelected())
 				  { 
@@ -108,9 +112,6 @@ public class Login {
 		JLabel lblUsername = new JLabel("Username");
 		lblUsername.setBounds(186, 92, 86, 14);
 		frame.getContentPane().add(lblUsername);
-		
-		
-		
 		
 		
 	}

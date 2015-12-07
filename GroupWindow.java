@@ -1,5 +1,6 @@
 package chatapp;
 
+
 import java.awt.EventQueue;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -20,8 +21,8 @@ public class GroupWindow extends JFrame {
 	JTextArea textArea;
 	private JTextField textField;
 	private JTextField textField_1;
-	List list;
-	Peer pe;
+	List list = new List();
+	Peer pee;
 
 	/**
 	 * Launch the application.
@@ -45,18 +46,20 @@ public class GroupWindow extends JFrame {
 	 */
 	public void update_groups()
 	{
-
-		list.removeAll();
-		for(int i=0;i<pe.group_list.size();i++)
+	
+	list.removeAll();
+		for(int i=0;i<pee.group_list.size();i++)
 		{
-			list.add(pe.group_list.get(i).name);
+			list.add(pee.group_list.get(i).name);
 		}
 	}
 
 	public GroupWindow(Peer pe) {
-		this.pe=pe;
+		this.pee=pe;
 		pe.group=this;
+		pee.update_me();
 		update_groups();
+
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -73,7 +76,7 @@ public class GroupWindow extends JFrame {
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textArea.setText(textArea.getText().trim()+"\n"+"me"+":"+textField.getText());
-				pe.send_group_message(group_name, textField.getText());
+				pee.send_group_message(group_name, textField.getText());
 
 				textField.setText("".trim());
 			}
@@ -100,8 +103,8 @@ public class GroupWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!textField_1.getText().equals(""))
 				{
-					pe.creategroup(textField_1.getText());
-					pe.update_me();
+					pee.creategroup(textField_1.getText());
+					pee.update_me();
 					group_name=textField_1.getText();
 				}
 
@@ -119,7 +122,7 @@ public class GroupWindow extends JFrame {
 		JButton btnJoin = new JButton("Join");
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pe.joingroup(list.getSelectedItem());
+				pee.joingroup(list.getSelectedItem());
 				group_name=list.getSelectedItem();
 			}
 		});
@@ -129,7 +132,7 @@ public class GroupWindow extends JFrame {
 		JButton btnR = new JButton("R");
 		btnR.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pe.update_me();
+				pee.update_me();
 
 			}
 		});

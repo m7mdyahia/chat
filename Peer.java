@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import chatapp.Message.MsgType;
 
 
+
 /**
  * This class creates a thread which handles connection to server
  * @author Amr Ragaey
@@ -61,7 +62,7 @@ class serverConnection extends Thread {
             case List_Users:
             	System.out.println("Recived user list size: "+(((ListofUseres)m).userlist).size());
             	p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)m).userlist));
-            	p.main.update_list_of_users();
+           	p.main.update_list_of_users();
             	break;
             case List_Groups:
             	System.out.println("Recived group list");
@@ -369,7 +370,7 @@ class Peer {
             if(user.username.equalsIgnoreCase(name)){
                 peer_callee = user;}
         }
-        System.out.println("Your Peer is:" + peer_callee.username);
+    //    System.out.println("Your Peer is:" + peer_callee.username);
         pc = new PeerConnection(this);
         pc.start();
         try {
