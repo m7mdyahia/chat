@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import chatapp.Message.MsgType;
+
 
 /**
  * This class creates a thread which handles connection to server
@@ -22,64 +24,81 @@ class serverConnection extends Thread {
     Peer p;
     public ObjectOutputStream dos;
     public ObjectInputStream dis; 
-
-    public serverConnection (Peer p) { this.p = p; }
+    Message m;
+    public serverConnection (Peer p) { 
+    	this.p = p; 
+    
+    try {
+    	client = new Socket("127.0.0.1", 1234);      
+        dos = new ObjectOutputStream(client.getOutputStream());
+		dis = new ObjectInputStream(client.getInputStream());	  
+		System.out.println("Connection Succesful");
+        m = (Message)dis.readObject();   //read the response from the server
+        if(m.msg==MsgType.Enter_Name)
+        {	
+        System.out.println("recived authentication request");
+		dos.reset();
+		dos.writeObject(new User_Message(new User(p.username,p.port)));
+		System.out.println("Authentication Succesful");
+        }
+	} catch (IOException | ClassNotFoundException e) {
+	
+		e.printStackTrace();
+	}
+      
+    
+    }
     
     @Override
     public void run() 
     { 
         try 
         {
-            //1.Create Client Socket and connect to the server
-            client = new Socket("127.0.0.1", 1234);
-
-            //2.if accepted create IO streams
-            dos = new ObjectOutputStream(client.getOutputStream());
-            dis = new ObjectInputStream(client.getInputStream());
-            
-            
-            //Scanner sc = new Scanner(System.in);
-            //String userInput;
-            
-            System.out.println("Connection Succesful");
-           
-            Message m= new Message();
-            //read the response from the server
-            m = (Message)dis.readObject();
-            //Print response
-            //System.out.println("Please enter your name?");
-
-            if (m.msg == Message.MsgType.Enter_Name) {
-               // userInput = sc.nextLine();
-            	dos.reset();
-                dos.writeObject(new User_Message(new User(p.username,p.port)));
+                      
+           while(true){          
+        	   m = (Message)dis.readObject();
+            switch (m.msg) {
+            case List_Users:
+            	System.out.println("Recived user list size: "+(((ListofUseres)m).userlist).size());
+            	p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)m).userlist));
+            	p.main.update_list_of_users();
+            	break;
+            case List_Groups:
+            	System.out.println("Recived group list");
+            	  p.group_list=Collections.synchronizedList(new ArrayList<available_groups>( ((ListofGroups)m).grouplist));
+            	  break;
+            case group_chat_message:
+				p.recived_group_message((broadcast_messsage_send)m);
+				break;
+			default:
+				break;
+			            	
             }
-//            dos.writeObject(new Message(Message.MsgType.Bye));
+           }
         }
         catch (Exception e) 
         {
+        	
             System.out.println(e.getMessage());
         }
     }
     
-    public synchronized void update_me() 
+    public  void update_me() 
     { 
         try 
         {
         	dos.reset();
             dos.writeObject(new Message(Message.MsgType.List_Users));
-            System.out.println("i sent update request ");
-            
-            p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
+            System.out.println("i sent user update request ");          
+          //  p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
         
             dos.reset();   
             dos.writeObject(new Message(Message.MsgType.List_Groups));
-            p.group_list=Collections.synchronizedList(new ArrayList<available_groups>( ((ListofGroups)dis.readObject()).grouplist));
+            System.out.println("i sent group update request ");   
+       //     p.group_list=Collections.synchronizedList(new ArrayList<available_groups>( ((ListofGroups)dis.readObject()).grouplist));
         } catch (IOException ex) {
             Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(serverConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
     }
     
  
@@ -317,13 +336,18 @@ class Peer {
     PeerConnection pc;//TODO convert to list
     PeerListener pl;
     PeerHandler ph;//TODO convert to list
-    Main main;
+    Main main;//TODO convert to list
+    Group group;//TODO convert to list
     
     public Peer(String s, Main main){
     	this.username=s;
     	this.main=main;
     }
-    public List<User>  list_of_users=Collections.synchronizedList(new ArrayList<User>()) ;
+    public void recived_group_message(broadcast_messsage_send group_message) {
+		group.recived_group_message(group_message);
+		
+	}
+	public List<User>  list_of_users=Collections.synchronizedList(new ArrayList<User>()) ;
     public List<available_groups> group_list=Collections.synchronizedList(new ArrayList<available_groups>());;
   
     public User peer_callee;
@@ -363,7 +387,7 @@ class Peer {
             
             sc = new serverConnection(this);
             sc.start();
-            sc.join();
+          
             
              pl = new PeerListener(sv,this);
             pl.start();   

@@ -2,6 +2,7 @@ package chatapp;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,20 +17,16 @@ class clientHandler extends Thread {
     Socket user;
     Peer_chat_server chat_server;
     User user_identification;
-
+    ObjectOutputStream dos;
+    ObjectInputStream dis;
     // constructor
     public clientHandler(Socket client,Peer_chat_server chat_server) {
         this.user = client;
         this.chat_server = chat_server;
-    }
-
-    @Override
-    public void run() {
         try {
-            //Create IO Streams
-            ObjectOutputStream dos = new  ObjectOutputStream(user.getOutputStream());
-            ObjectInputStream dis = new ObjectInputStream(user.getInputStream());
-            
+			dos = new  ObjectOutputStream(user.getOutputStream());
+		    dis = new ObjectInputStream(user.getInputStream());
+		    dos.reset();
             dos.writeObject(new Message(Message.MsgType.Enter_Name));
             
             
@@ -42,6 +39,19 @@ class clientHandler extends Thread {
             System.out.println("user arrived "+user_identification.username);
             chat_server.user_List.add(user_identification);
             System.out.println("I added u to list");
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+  
+    }
+
+    @Override
+    public void run() {
+        try {                                   
             
             while (true) {
            
@@ -53,15 +63,16 @@ class clientHandler extends Thread {
               case Bye:
               {
             	  user_identification.is_online=false;
+            	  break;
               }
               case List_Users:
               {
-                  System.out.println("here i'm writing your list");
+                  System.out.println("here i'm writing user list size:"+chat_server.user_List.size());
                   dos.reset();
             	  dos.writeObject(new ListofUseres(chat_server.user_List));
-            	  for (User user : chat_server.user_List) {
-            		  System.out.print(user.username+", ");	
-				}
+//            	  for (User user : chat_server.user_List) {
+//            		  System.out.print(user.username+", ");	
+//				}
             	 
                   break;
               }
@@ -73,6 +84,7 @@ class clientHandler extends Thread {
               }
               case List_Groups:
             	  {
+            		  System.out.println("here i'm writing group list size : "+chat_server.available_groups_list.size());
             		  dos.reset();
             		  dos.writeObject(new ListofGroups(chat_server.available_groups_list));
                        break;
@@ -85,27 +97,17 @@ class clientHandler extends Thread {
             	  broadcast_messsage_send sent_message = (broadcast_messsage_send)dis.readObject();
             	  sent_message.sender_name=user_identification.username;
             	  new BroadcastThread(sent_message,chat_server,user_identification).start();
-
+            	  break;
 			default:
 				break;
 			}
-       
                 
-                
-//                //Checks must be performed
-//                //user select to create a group chat  or chat to another peer
-//                dos.writeUTF("Your Payment was successful \nDo you want to perform another payment[Y/N] ?");
-                String Choice = "l";
-                if (Choice.equalsIgnoreCase("N")) {
-                    dos.writeUTF("Bye");
-                    break;
-                }
 
             }
             //Close/release resources
-            dis.close();
-            dos.close();
-            user.close();
+//            dis.close();
+//            dos.close();
+//            user.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -125,8 +127,9 @@ public class Peer_chat_server {
         try {
             
             ServerSocket sv = new ServerSocket(1234);
+            System.out.println("Hello from server");
             while (true) {
-                System.out.println("Hello from server");
+                
 
                 Socket peer= sv.accept();
                 System.out.println("New peer Arrived");
@@ -176,7 +179,7 @@ public class Peer_chat_server {
 
 
 
-class available_groups
+class available_groups implements Serializable 
 {
 	String name;
 	ArrayList<User> group_useres;

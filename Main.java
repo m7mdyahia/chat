@@ -22,6 +22,17 @@ public class Main extends JFrame {
 	{
 		textArea.setText(textArea.getText().trim()+"\n"+str);
 	}
+	public void update_list_of_users()
+	{
+		System.out.println(pe.list_of_users.size());
+		list.clear();
+		for(int i=0;i<pe.list_of_users.size();i++)
+    	{
+		 
+		 list.add(pe.list_of_users.get(i).username);
+		 }
+	}
+	
 	private JPanel contentPane;
 	private JTextField textField;
     JTextArea textArea = new JTextArea();
@@ -52,8 +63,9 @@ public class Main extends JFrame {
 		
 		
 		//this.p=p;
-		 pe= new Peer(s,this);
-	     pe.start();
+		pe= new Peer(s,this);
+	    pe.start();
+	    
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 321);
 		contentPane = new JPanel();
@@ -71,6 +83,12 @@ public class Main extends JFrame {
 	    textArea.setEditable(false);
 		
 		JButton btnNewButton = new JButton("Group Chat");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Group group=new Group(pe);
+				group.setVisible(true);
+			}
+		});
 		
 		btnNewButton.setBounds(10, 24, 113, 23);
 		contentPane.add(btnNewButton);
@@ -122,17 +140,10 @@ public class Main extends JFrame {
 //		l.setText(s);
 		
 		
-		  pe.update_me();
-		
-		for(int i=0;i<pe.list_of_users.size();i++)
-    	{
-		 
-		 list.addItem(pe.list_of_users.get(i).username);}
-	     
+		pe.update_me();  
          
 		
-		//list.addItem("ops");
-		//list.addItem("ool");
+	
 		
 		Label label = new Label("Online Users");
 		label.setBounds(335, 3, 99, 22);
