@@ -66,16 +66,16 @@ class ListofUseres extends Message
 class ListofGroups extends Message
 {
 	
-	public ListofGroups(String data,ArrayList<available_groups> grouplist) {
+	public ListofGroups(String data,ArrayList<Available_group> grouplist) {
 		super( MsgType.List_Groups, data);
 		this.grouplist = grouplist;
 	}
-	public ListofGroups(List<available_groups> available_groups_list) {
+	public ListofGroups(List<Available_group> available_groups_list) {
 		super( MsgType.List_Groups);
 		this.grouplist = available_groups_list;
 	}
 
-	List<available_groups> grouplist;
+	List<Available_group> grouplist;
 }
 class broadcast_messsage_send  extends Message
 {
@@ -86,6 +86,14 @@ class broadcast_messsage_send  extends Message
 		this.group_name=group_name;
 		
 	}
+	
+	@Override
+	public String toString() {
+		return "broadcast_messsage_send [group_name=" + group_name
+				+ ", sender_name=" + sender_name +  ", msg="
+				+ data + "]";
+	}
+
 	public broadcast_messsage_send(String resala_nafsha,String group_name,String sender_name) {
 		super(MsgType.group_chat_message, resala_nafsha);
 		this.group_name=group_name;

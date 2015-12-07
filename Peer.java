@@ -65,7 +65,7 @@ class serverConnection extends Thread {
             	break;
             case List_Groups:
             	System.out.println("Recived group list");
-            	  p.group_list=Collections.synchronizedList(new ArrayList<available_groups>( ((ListofGroups)m).grouplist));
+            	  p.group_list=Collections.synchronizedList(new ArrayList<Available_group>( ((ListofGroups)m).grouplist));
             	  break;
             case group_chat_message:
 				p.recived_group_message((broadcast_messsage_send)m);
@@ -348,7 +348,7 @@ class Peer {
 		
 	}
 	public List<User>  list_of_users=Collections.synchronizedList(new ArrayList<User>()) ;
-    public List<available_groups> group_list=Collections.synchronizedList(new ArrayList<available_groups>());;
+    public List<Available_group> group_list=Collections.synchronizedList(new ArrayList<Available_group>());;
   
     public User peer_callee;
     
@@ -412,7 +412,7 @@ class Peer {
 			sc.dos.reset();
 			sc.dos.writeObject(new Message(Message.MsgType.Join_Group,group_name));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
