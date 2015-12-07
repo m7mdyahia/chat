@@ -66,9 +66,11 @@ class serverConnection extends Thread {
             case List_Groups:
             	System.out.println("Recived group list");
             	  p.group_list=Collections.synchronizedList(new ArrayList<Available_group>( ((ListofGroups)m).grouplist));
+            	  p.main.update_group_windows();
             	  break;
             case group_chat_message:
 				p.recived_group_message((broadcast_messsage_send)m);
+				
 				break;
 			default:
 				break;
@@ -90,7 +92,7 @@ class serverConnection extends Thread {
         	dos.reset();
             dos.writeObject(new Message(Message.MsgType.List_Users));
             System.out.println("i sent user update request ");          
-          //  p.list_of_users= Collections.synchronizedList(new ArrayList<User>(((ListofUseres)dis.readObject()).userlist));
+        
         
             dos.reset();   
             dos.writeObject(new Message(Message.MsgType.List_Groups));
@@ -336,10 +338,10 @@ class Peer {
     PeerConnection pc;//TODO convert to list
     PeerListener pl;
     PeerHandler ph;//TODO convert to list
-    Main main;//TODO convert to list
-    Group group;//TODO convert to list
+    MainWindow main;//TODO convert to list
+    GroupWindow group;//TODO convert to list
     
-    public Peer(String s, Main main){
+    public Peer(String s, MainWindow main){
     	this.username=s;
     	this.main=main;
     }

@@ -3,6 +3,7 @@ package chatapp;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -16,7 +17,7 @@ public class Login {
 
 	private JFrame frame;
 	private JTextField textField;
-
+	private ArrayList<GroupWindow> GroupWindowList;
 	/**
 	 * Launch the application.
 	 */
@@ -38,6 +39,7 @@ public class Login {
 	 */
 	public Login() {
 		initialize();
+		
 	}
 
 	/**
@@ -92,7 +94,7 @@ public class Login {
 				  else if(Client.isSelected())
 				  { 
 
-					  Main main=new Main(textField.getText());  
+					  MainWindow main=new MainWindow(textField.getText());  
 					  frame.setVisible(false);
 					  main.setVisible(true);
 				    
